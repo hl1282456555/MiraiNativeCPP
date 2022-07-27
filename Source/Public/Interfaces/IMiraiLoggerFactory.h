@@ -14,6 +14,8 @@ public:
 	virtual ~IMiraiLoggerFactory() {}
 
 	static std::shared_ptr<IMiraiLoggerFactory> get();
+
+	// MiraiLoggerFactory interface
 	virtual std::shared_ptr<IMiraiLogger> createPlatformLogger(const char* Identity) = 0;
 };
 

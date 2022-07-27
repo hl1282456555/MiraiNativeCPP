@@ -22,7 +22,7 @@ class MIRAI_NATIVE_CPP_API IMiraiLogger
 public:
 	virtual ~IMiraiLogger() {}
 
-	// interface of MiraiLogger
+	// MiraiLogger interface
 	virtual const char* getIdentity() = 0;
 	virtual void printLog(const char* Message, EMiraiLogLevel Level) = 0;
 };
