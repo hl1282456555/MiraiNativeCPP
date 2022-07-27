@@ -6,10 +6,10 @@
 
 EXPORT_SCOPE_START
 
-class IMiraiInterface
+class MIRAI_NATIVE_CPP_API IMiraiInterface
 {
 public:
-	virtual ~IMiraiInterface() = 0;
+	virtual ~IMiraiInterface() {}
 
 	static std::shared_ptr<IMiraiInterface> get();
 

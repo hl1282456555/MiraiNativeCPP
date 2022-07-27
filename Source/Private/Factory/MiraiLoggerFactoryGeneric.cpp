@@ -6,7 +6,7 @@ MiraiLoggerFactoryGeneric::~MiraiLoggerFactoryGeneric()
 {
 }
 
-std::shared_ptr<IMiraiLogger> MiraiLoggerFactoryGeneric::createPlatformLogger(const std::shared_ptr<std::string> Identity)
+std::shared_ptr<IMiraiLogger> MiraiLoggerFactoryGeneric::createPlatformLogger(const char* Identity)
 {
 	return std::make_shared<MiraiPlatformLogger>(Identity);
 }

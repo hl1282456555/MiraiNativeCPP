@@ -1,8 +1,12 @@
 #ifndef I_MIRAI_LOGGER_H
 #define I_MIRAI_LOGGER_H
 
+#include "Definitions.h"
+
 #include <string>
 #include <memory>
+
+EXPORT_SCOPE_START
 
 enum class EMiraiLogLevel
 {
@@ -13,14 +17,16 @@ enum class EMiraiLogLevel
 	Error
 };
 
-class IMiraiLogger
+class MIRAI_NATIVE_CPP_API IMiraiLogger
 {
 public:
-	virtual ~IMiraiLogger() = 0;
+	virtual ~IMiraiLogger() {}
 
 	// interface of MiraiLogger
 	virtual std::shared_ptr<std::string> getIdentity() = 0;
-	virtual void printLog(const std::shared_ptr<std::string> Message, EMiraiLogLevel Level);
+	virtual void printLog(const std::string& Message, EMiraiLogLevel Level) = 0;
 };
+
+EXPORT_SCOPE_END
 
 #endif

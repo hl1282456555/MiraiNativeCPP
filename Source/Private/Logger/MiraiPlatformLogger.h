@@ -6,12 +6,14 @@
 class MiraiPlatformLogger : public IMiraiLogger
 {
 public:
-	explicit MiraiPlatformLogger(const std::shared_ptr<std::string> Identity);
+	explicit MiraiPlatformLogger(const char* Identity);
 	virtual ~MiraiPlatformLogger() override;
 
-	virtual void printLog(const std::shared_ptr<std::string> Message, EMiraiLogLevel Level) override;
+	virtual std::shared_ptr<std::string> getIdentity() override;
+	virtual void printLog(const std::string& Message, EMiraiLogLevel Level) override;
 
 private:
+	std::string Identity_;
 	void* MiraiPlatformLoggerHandle_;
 };
 

@@ -4,7 +4,7 @@
 #include "miraicore_api.h"
 #include <exception>
 
-static miraicore_ExportedSymbols* GMiraiSymbols = nullptr;
+extern miraicore_ExportedSymbols* GMiraiSymbols;
 
 #define CHECK_MIRAI_SYMBOLS() if (GMiraiSymbols == nullptr) { throw std::exception("GMiraiSymbols is nullptre, ensure you called Initialize()."); } 
 

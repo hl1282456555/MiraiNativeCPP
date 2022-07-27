@@ -9,7 +9,7 @@ class MiraiLoggerFactoryGeneric : public IMiraiLoggerFactory
 public:
 	virtual ~MiraiLoggerFactoryGeneric() override;
 
-	virtual std::shared_ptr<IMiraiLogger> createPlatformLogger(const std::shared_ptr<std::string> Identity) override;
+	virtual std::shared_ptr<IMiraiLogger> createPlatformLogger(const char* Identity) override;
 };
 
 #endif

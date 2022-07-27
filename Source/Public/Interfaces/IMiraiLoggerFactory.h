@@ -8,13 +8,13 @@
 
 EXPORT_SCOPE_START
 
-class IMiraiLoggerFactory
+class MIRAI_NATIVE_CPP_API IMiraiLoggerFactory
 {
 public:
-	virtual ~IMiraiLoggerFactory() = 0;
+	virtual ~IMiraiLoggerFactory() {}
 
 	static std::shared_ptr<IMiraiLoggerFactory> get();
-	virtual std::shared_ptr<IMiraiLogger> createPlatformLogger(const std::shared_ptr<std::string> Identity) = 0;
+	virtual std::shared_ptr<IMiraiLogger> createPlatformLogger(const char* Identity) = 0;
 };
 
 EXPORT_SCOPE_END
