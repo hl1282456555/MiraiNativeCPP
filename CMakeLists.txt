@@ -2,13 +2,16 @@ cmake_minimum_required(VERSION 3.15)
 
 project(MiraiNativeCPP LANGUAGES CXX)
 
-add_compile_options(/utf-8)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 file(GLOB_RECURSE SOURCE_FILES ./Source/*.h ./Source/*.hpp ./Source/*.c ./Source/*.cpp)
 file(GLOB_RECURSE THIRDPARTY_FILES ./ThirdParty/*.h ./ThirdParty/*.hpp ./ThirdParty/*.c ./ThirdParty/*.cpp)
+
+if (MSVC)
+add_compile_options(/Ehs /utf-8)
+else()
+endif()
 
 add_library(${PROJECT_NAME} SHARED  
 	${SOURCE_FILES}
