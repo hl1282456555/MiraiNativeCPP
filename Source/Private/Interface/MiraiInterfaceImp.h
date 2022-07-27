@@ -13,7 +13,7 @@ public:
 	virtual ~MiraiInterfaceImp() override;
 
 private:
-	void* IMiraiInterfaceHandle_;
+	void* _IMiraiInterfaceHandle;
 };
 
 #endif

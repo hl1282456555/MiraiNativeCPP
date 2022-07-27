@@ -23,8 +23,8 @@ public:
 	virtual ~IMiraiLogger() {}
 
 	// interface of MiraiLogger
-	virtual std::shared_ptr<std::string> getIdentity() = 0;
-	virtual void printLog(const std::string& Message, EMiraiLogLevel Level) = 0;
+	virtual const char* getIdentity() = 0;
+	virtual void printLog(const char* Message, EMiraiLogLevel Level) = 0;
 };
 
 EXPORT_SCOPE_END
