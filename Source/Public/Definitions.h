@@ -15,4 +15,12 @@
 #define MIRAI_NATIVE_CPP_API
 #endif
 
+#ifdef __cplusplus
+	#define EXPORT_SCOPE_START extern "C" {
+	#define EXPORT_SCOPE_END }
+#else
+	#define EXPORT_SCOPE_START
+	#define EXPORT_SCOPE_END
+#endif
+
 #endif

@@ -16,6 +16,9 @@ add_library(${PROJECT_NAME} SHARED
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCE_FILES})
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${THIRDPARTY_FILES})
 
+# project defintions
+add_definitions(-DMIRAI_NATIVE_API_EXPORT)
+
 # Add mirai-core-native library
 add_definitions(-DWITH_MIRAI_CORE_NATIVE)
 target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/ThirdParty/mirai-core-native/include")
