@@ -14,6 +14,7 @@ public:
 	virtual ~MiraiBotConfigurationImp();
 
 private:
+	bool bIsDefault;
 	miraicore_kref_net_mamoe_mirai_utils_BotConfiguration _MiraiBotConfigurationHandle;
 };
 

@@ -3,12 +3,14 @@
 
 #include "Definitions.h"
 
+#include "Interfaces/IMiraiContactOrBot.h"
+
 EXPORT_SCOPE_START
 
-class MIRAI_NATIVE_CPP_API IMiraiBot
+class MIRAI_NATIVE_CPP_API IMiraiBot : public IMiraiContactOrBot
 {
 public:
-	virtual ~IMiraiBot() {}
+	virtual ~IMiraiBot() override {}
 
 	// MiraiBot Interface
 };

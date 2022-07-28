@@ -6,8 +6,8 @@ MiraiInterfaceImp::MiraiInterfaceImp()
 {
 	CHECK_MIRAI_SYMBOLS();
 
-	_IMiraiInterfaceHandle = GMiraiSymbols->kotlin.root.net.mamoe.mirai.get_Mirai().pinned;
-	if (_IMiraiInterfaceHandle == nullptr)
+	_IMiraiInterfaceHandle = GMiraiSymbols->kotlin.root.net.mamoe.mirai.get_Mirai();
+	if (_IMiraiInterfaceHandle.pinned == nullptr)
 	{
 		throw std::exception("Failed to get the mirai interface from mirai-core.");
 	}
@@ -15,9 +15,8 @@ MiraiInterfaceImp::MiraiInterfaceImp()
 
 MiraiInterfaceImp::~MiraiInterfaceImp()
 {
-	if (_IMiraiInterfaceHandle != nullptr)
+	if (_IMiraiInterfaceHandle.pinned != nullptr)
 	{
-		GMiraiSymbols->DisposeStablePointer(_IMiraiInterfaceHandle);
-		_IMiraiInterfaceHandle = nullptr;
+		_IMiraiInterfaceHandle.pinned = nullptr;
 	}
 }

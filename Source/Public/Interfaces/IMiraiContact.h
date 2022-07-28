@@ -4,12 +4,14 @@
 #include "Definitions.h"
 #include "IMiraiContactOrBot.h"
 
-#include <memory>
+EXPORT_SCOPE_START
 
-class IMiraiContact
+class MIRAI_NATIVE_CPP_API IMiraiContact : public IMiraiContactOrBot
 {
 public:
-	virtual ~IMiraiContact() = 0;
+	virtual ~IMiraiContact() override {}
 };
+
+EXPORT_SCOPE_END
 
 #endif

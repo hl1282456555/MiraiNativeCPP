@@ -3,8 +3,7 @@
 
 #include "Interfaces/IMiraiInterface.h"
 
-#include <memory>
-#include <mutex>
+#include "miraicore_api.h"
 
 class MiraiInterfaceImp : public IMiraiInterface
 {
@@ -13,7 +12,7 @@ public:
 	virtual ~MiraiInterfaceImp() override;
 
 private:
-	void* _IMiraiInterfaceHandle;
+	miraicore_kref_net_mamoe_mirai_IMirai _IMiraiInterfaceHandle;
 };
 
 #endif

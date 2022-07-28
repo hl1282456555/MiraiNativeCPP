@@ -6,6 +6,7 @@
 class MiraiUtilsHelperImp : public IMiraiUtilsHelper
 {
 public:
+	MiraiUtilsHelperImp();
 	virtual ~MiraiUtilsHelperImp();
 
 

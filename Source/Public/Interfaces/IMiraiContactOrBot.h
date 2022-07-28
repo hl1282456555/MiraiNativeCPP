@@ -2,29 +2,32 @@
 #define I_MIRAI_CONTACT_OR_BOT_H
 
 #include "Definitions.h"
-#include "IMiraiBot.h"
 
 #include <memory>
 
 enum class EAvatarSpec
 {
-	Smallest = 0,
-	Small,
-	Medium,
-	Large,
-	Largest,
-	original
+	Original = 0,
+	Smallest = 40,
+	Small = 41,
+	Medium = 100,
+	Large = 140,
+	Largest = 640
 };
 
-class IMiraiContactOrBot
+EXPORT_SCOPE_START
+
+class MIRAI_NATIVE_CPP_API IMiraiContactOrBot
 {
 public:
-	virtual ~IMiraiContactOrBot() = 0;
+	virtual ~IMiraiContactOrBot() {}
 
-	virtual const char* getAvatarUrl() = 0;
-	virtual std::shared_ptr<IMiraiBot> getBot() = 0;
+	// MiraiContactOrBot interface
+	virtual const char* getAvatarUrl(EAvatarSpec AvatarSpec) = 0;
+	virtual std::shared_ptr<class IMiraiBot> getBot() = 0;
 	virtual long long getId() = 0;
-	virtual const char* avatarUrl(EAvatarSpec AvatarSpec) = 0;
 };
+
+EXPORT_SCOPE_END
 
 #endif

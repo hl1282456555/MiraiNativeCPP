@@ -3,6 +3,8 @@
 
 #include "Interfaces/IMiraiLogger.h"
 
+#include "miraicore_api.h"
+
 class MiraiPlatformLogger : public IMiraiLogger
 {
 public:
@@ -14,7 +16,7 @@ public:
 
 private:
 	std::string _Identity;
-	void* _MiraiPlatformLoggerHandle;
+	miraicore_kref_net_mamoe_mirai_utils_PlatformLogger _MiraiPlatformLoggerHandle;
 };
 
 #endif

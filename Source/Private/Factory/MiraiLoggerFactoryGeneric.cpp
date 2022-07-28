@@ -1,4 +1,4 @@
-#include "MiraiLoggerFactoryGeneric.h"
+#include "Factory/MiraiLoggerFactoryGeneric.h"
 
 #include "Logger/MiraiPlatformLogger.h"
 
