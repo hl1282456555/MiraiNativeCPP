@@ -3,12 +3,16 @@
 
 #include "Definitions.h"
 
-class IMiraiBot
+EXPORT_SCOPE_START
+
+class MIRAI_NATIVE_CPP_API IMiraiBot
 {
 public:
-	virtual ~IMiraiBot() = 0;
+	virtual ~IMiraiBot() {}
 
 	// MiraiBot Interface
 };
+
+EXPORT_SCOPE_END
 
 #endif

@@ -3,12 +3,12 @@
 #include "NativeCPPCommon.h"
 
 MiraiBotConfigurationImp::MiraiBotConfigurationImp()
-	: _MiraiBotConfigurationHandle(nullptr)
+	: _MiraiBotConfigurationHandle{nullptr}
 {
 
 }
 
-MiraiBotConfigurationImp::MiraiBotConfigurationImp(miraicore_kref_net_mamoe_mirai_utils_BotConfiguration* DefaultConfig)
+MiraiBotConfigurationImp::MiraiBotConfigurationImp(miraicore_kref_net_mamoe_mirai_utils_BotConfiguration DefaultConfig)
 	: _MiraiBotConfigurationHandle(DefaultConfig)
 {
 	
@@ -16,9 +16,9 @@ MiraiBotConfigurationImp::MiraiBotConfigurationImp(miraicore_kref_net_mamoe_mira
 
 MiraiBotConfigurationImp::~MiraiBotConfigurationImp()
 {
-	if (_MiraiBotConfigurationHandle != nullptr)
+	if (_MiraiBotConfigurationHandle.pinned != nullptr)
 	{
-		GMiraiSymbols->DisposeStablePointer(_MiraiBotConfigurationHandle);
-		_MiraiBotConfigurationHandle = nullptr;
+		GMiraiSymbols->DisposeStablePointer(_MiraiBotConfigurationHandle.pinned);
+		_MiraiBotConfigurationHandle.pinned = nullptr;
 	}
 }

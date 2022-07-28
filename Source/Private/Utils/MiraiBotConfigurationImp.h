@@ -10,11 +10,11 @@ class MiraiBotConfigurationImp : public IMiraiBotConfiguration
 {
 public:
 	MiraiBotConfigurationImp();
-	MiraiBotConfigurationImp(miraicore_kref_net_mamoe_mirai_utils_BotConfiguration* DefaultConfig);
+	MiraiBotConfigurationImp(miraicore_kref_net_mamoe_mirai_utils_BotConfiguration DefaultConfig);
 	virtual ~MiraiBotConfigurationImp();
 
 private:
-	miraicore_kref_net_mamoe_mirai_utils_BotConfiguration* _MiraiBotConfigurationHandle;
+	miraicore_kref_net_mamoe_mirai_utils_BotConfiguration _MiraiBotConfigurationHandle;
 };
 
 #endif

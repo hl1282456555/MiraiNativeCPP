@@ -9,7 +9,8 @@ file(GLOB_RECURSE SOURCE_FILES ./Source/*.h ./Source/*.hpp ./Source/*.c ./Source
 file(GLOB_RECURSE THIRDPARTY_FILES ./ThirdParty/*.h ./ThirdParty/*.hpp ./ThirdParty/*.c ./ThirdParty/*.cpp)
 
 if (MSVC)
-add_compile_options(/Ehs /utf-8)
+add_compile_options(/utf-8)
+string(REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 else()
 endif()
 

@@ -21,17 +21,17 @@ enum class EMiraiProtocol
 	MACOS
 };
 
-class IMiraiBotConfiguration
+EXPORT_SCOPE_START
+
+class MIRAI_NATIVE_CPP_API IMiraiBotConfiguration
 {
 public:
 	virtual ~IMiraiBotConfiguration() {}
 
 	static std::shared_ptr<IMiraiBotConfiguration> getDefault();
 
-	// MiraiBotConfiguration interface
-	virtual bool getAutoReconnectOnForceOffline() = 0;
-
-	virtual void setAutoReconnectOnForceOffline(bool bEnable) = 0;
 };
+
+EXPORT_SCOPE_END
 
 #endif
