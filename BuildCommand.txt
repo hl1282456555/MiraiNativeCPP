@@ -1,0 +1,7 @@
+Boost :
+b2 -s ZLIB_INCLUDE="D:\zlib-1.2.12\install\include" -s ZLIB_LIBPATH="D:\zlib-1.2.12\install\lib" variant=release,debug link=shared threading=multi runtime-link=shared address-model=64
+
+Project CMake:
+mkdir cmake_build
+cd cmake_build
+cmake .. -DBOOST_ROOT="D:\boost_1_79_0" -DOPENSSL_ROOT_DIR="D:\OpenSSL\OpenSSL"

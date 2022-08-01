@@ -1,17 +1,22 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.19)
 
 project(MiraiNativeCPP LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(Boost_USE_RELEASE_LIBS       ON)
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME 	OFF)
+set(Boost_USE_STATIC_LIBS 		OFF)
+
+find_package(Boost 1.79.0 REQUIRED COMPONENTS log filesystem random thread iostreams json chrono date_time locale)
+find_package(OpenSSL REQUIRED)
+
 file(GLOB_RECURSE SOURCE_FILES ./Source/*.h ./Source/*.hpp ./Source/*.c ./Source/*.cpp)
 file(GLOB_RECURSE THIRDPARTY_FILES ./ThirdParty/*.h ./ThirdParty/*.hpp ./ThirdParty/*.c ./ThirdParty/*.cpp)
 
-if (MSVC)
-add_compile_options(/Ehs /utf-8)
-else()
-endif()
+add_compile_options(/utf-8)
 
 add_library(${PROJECT_NAME} SHARED  
 	${SOURCE_FILES}
@@ -21,30 +26,44 @@ add_library(${PROJECT_NAME} SHARED
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCE_FILES})
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${THIRDPARTY_FILES})
 
-# project defintions
+# Add boost support
+if (Boost_FOUND)
+	message("Boost VERSION: ${Boost_VERSION}")
+    message("Boost INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
+    message("Boost Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
+
+	target_link_libraries(${PROJECT_NAME} PUBLIC 
+		Boost::headers 
+		Boost::diagnostic_definitions 
+		Boost::dynamic_linking
+		Boost::log
+		Boost::filesystem
+		Boost::random
+		Boost::thread
+		Boost::iostreams
+		Boost::json
+		Boost::chrono
+		Boost::date_time
+		Boost::locale
+		)
+endif()
+
+# Add openssl support
+if (OPENSSL_FOUND)
+	include_directories(${OPENSSL_INCLUDE_DIR})
+	target_link_libraries(${PROJECT_NAME} PUBLIC OpenSSL::SSL)
+endif()
+
+# Add http request ability support
+include(FetchContent)
+FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git
+                         GIT_TAG 871ed52d350214a034f6ef8a3b8f51c5ce1bd400) # The commit hash for 1.9.0. Replace with the latest from: https://github.com/libcpr/cpr/releases
+FetchContent_MakeAvailable(cpr)
+add_definitions(-DWITH_HTTP_REQUEST)
+target_link_libraries(${PROJECT_NAME} PUBLIC cpr::cpr)
+
+# Add project export classes defintion
 add_definitions(-DMIRAI_NATIVE_API_EXPORT)
 
-# Add mirai-core-native library
-add_definitions(-DWITH_MIRAI_CORE_NATIVE)
-target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/ThirdParty/mirai-core-native/include")
-target_link_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/ThirdParty/mirai-core-native/lib")
-target_link_libraries(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/ThirdParty/mirai-core-native/lib/miraicore.lib")
-
-# Add json support
-add_definitions(-DWITH_JSON)
-target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/ThirdParty/json")
-
-# Collect source files from project dir.
-set(PROJECT_SOURCE_PATHS)
-file(GLOB_RECURSE PROJECT_SOURCE_FILES ./Source/*.*)
-
-foreach(CURRENT_PROJECT_FILE ${PROJECT_SOURCE_FILES})
-	if (NOT IS_DIRECTORY ${CURRENT_PROJECT_FILE})
-		get_filename_component(TEMP_FILE_PATH ${CURRENT_PROJECT_FILE} DIRECTORY)
-		list(APPEND PROJECT_SOURCE_PATHS ${TEMP_FILE_PATH})
-	endif()
-endforeach()
-
-list(REMOVE_DUPLICATES PROJECT_SOURCE_PATHS)
-
-target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_PATHS}")
+# Add project public include path
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_SOURCE_DIR}/Source/Public")
