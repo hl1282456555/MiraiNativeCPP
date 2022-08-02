@@ -6,6 +6,8 @@
 #include <boost/container/string.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <boost/log/trivial.hpp>
+
 #include <openssl/ec.h>
 #include <openssl/ecdh.h>
 #include <openssl/evp.h>
@@ -16,8 +18,6 @@ static const char* ServerRawPublicKey = "04EBCA94D733E399B2DB96EACDD3F69A8BB0F74
 
 void FECDH::generateKey(const boost::container::string& InPublicKey)
 {
-	ServerPublicKeyVersion = 1;
-
 	EC_KEY* serverECKey = nullptr;
 	EC_KEY* selfECKey = nullptr;
 	EC_POINT* computedPoint = nullptr;
@@ -136,5 +136,22 @@ void FECDH::fetchPublickKeyFromServer(unsigned long long InUin)
 		return;
 	}
 
-	response.text;
+	/* response json content
+	{
+		"QuerySpan": 86400,
+		"PubKeyMeta": {
+			"KeyVer": 2,
+			"PubKey": "",
+			"PubKeySign": ""
+		}
+	}
+	*/
+
+	try {
+		//boost::json::object responseJson = boost::json::parse(response.text).as_object();
+	}
+	catch (std::system_error& Error)
+	{
+
+	}
 }
