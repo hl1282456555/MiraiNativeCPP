@@ -1,7 +1,7 @@
 #include "Bot.h"
 
 #include "Utils/MD5.h"
-
+#include "Utils/RandomUtils.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
@@ -31,6 +31,17 @@ ABot::ABot(unsigned long long InAccount, const boost::container::string& InPassw
 	bAllowSlider = true;
 	bAlive = true;
 	Signature.OutPacketSessionID = { 0x02, 0xB0, 0x5B, 0x8B };
+
+	OICQCodec.ECDHInfo.fetchPublickKeyFromServer(Uin);
+	OICQCodec.RandomKey = URandomUtils::generateRandomBytes(16);
+
+	SequenceId = 0x3635;
+	RequestPacketRequestId = 1921334513;
+	GroupSequence = URandomUtils::generateInt(0, 1999);
+	FriendSequence = 22911;
+	HighwayApplyUpSequence = 77918;
+
+	HighwaySession.Uin = boost::lexical_cast<boost::container::string>(Uin);
 }
 
 ABot::~ABot()

@@ -3,10 +3,13 @@
 
 #include "Utils/ECDH.h"
 
+#include <boost/container/vector.hpp>
+
 struct FOICQCodec
 {
 	FECDH ECDHInfo;
-	unsigned short RandomKey;
+	boost::container::vector<unsigned char> RandomKey;
+	boost::container::vector<unsigned char> WtSessionTicketKey;
 };
 
 #endif

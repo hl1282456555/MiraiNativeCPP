@@ -4,7 +4,8 @@
 #include "Definitions.h"
 #include "Structures/Authority.h"
 #include "Structures/DeviceInfo.h"
-#include "Structures/HighwayInfo.h"
+#include "Structures/Network.h"
+#include "Structures/OICQ.h"
 
 #include <boost/container/string.hpp>
 
@@ -42,11 +43,20 @@ protected:
 	bool bAlive;
 	bool bAllowSlider;
 
-	HighwaySession	HighwaySession;
+	FTransport Transport;
 
-	SigInfo	Signature;
-	AppVersion AppVersion;
-	DeviceInfo DeviceInfo;
+	FSigInfo	Signature;
+	FAppVersion AppVersion;
+	FDeviceInfo DeviceInfo;
+	FOICQCodec OICQCodec;
+
+	int SequenceId;
+	int RequestPacketRequestId;
+	int GroupSequence;
+	int FriendSequence;
+	int HighwayApplyUpSequence;
+
+	FHighwaySession	HighwaySession;
 
 	boost::asio::io_context	IOContext;
 	boost::asio::ip::tcp::socket Connector;

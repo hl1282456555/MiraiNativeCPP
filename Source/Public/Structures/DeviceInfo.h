@@ -5,7 +5,7 @@
 
 #include <boost/container/vector.hpp>
 
-struct OSVersion
+struct FOSVersion
 {
 	boost::container::vector<unsigned char>	Incremental;
 	boost::container::vector<unsigned char>	Release;
@@ -13,7 +13,7 @@ struct OSVersion
 	unsigned int SDK;
 };
 
-struct DeviceInfo
+struct FDeviceInfo
 {
 	boost::container::vector<unsigned char>	Display;
 	boost::container::vector<unsigned char>	Product;
@@ -40,8 +40,8 @@ struct DeviceInfo
 	boost::container::vector<unsigned char> VendorOSName;
 	boost::container::vector<unsigned char> Guid;
 	boost::container::vector<unsigned char> TgtgtKey;
-	ProtocolType							Protocol;
-	OSVersion								Version;
+	EProtocolType							Protocol;
+	FOSVersion								Version;
 };
 
 #endif

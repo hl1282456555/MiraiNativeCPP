@@ -9,6 +9,7 @@ EXPORT_SCOPE_START
 class MIRAI_NATIVE_CPP_API FECDH
 {
 public:
+	static FECDH createDefault();
 	void generateKey(const boost::container::string& InPublicKey);
 	void fetchPublickKeyFromServer(unsigned long long InUin);
 

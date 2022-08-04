@@ -16,6 +16,14 @@
 
 static const char* ServerRawPublicKey = "04EBCA94D733E399B2DB96EACDD3F69A8BB0F74224E2B44E3357812211D2E62EFBC91BB553098E25E33A799ADC7F76FEB208DA7C6522CDB0719A305180CC54A82E";
 
+FECDH FECDH::createDefault()
+{
+	FECDH result;
+	result.generateKey(ServerRawPublicKey);
+
+	return result;
+}
+
 void FECDH::generateKey(const boost::container::string& InPublicKey)
 {
 	EC_KEY* serverECKey = nullptr;
@@ -148,7 +156,11 @@ void FECDH::fetchPublickKeyFromServer(unsigned long long InUin)
 	*/
 
 	try {
-		//boost::json::object responseJson = boost::json::parse(response.text).as_object();
+		boost::json::object responseJson = boost::json::parse(response.text).as_object();
+		boost::json::object metaJson = responseJson["PubKeyMeta"].as_object();
+		ServerPublicKeyVersion = metaJson["KeyVer"].as_int64();
+		boost::container::string responsePublicKey = metaJson["PubKey"].as_string().c_str();
+		generateKey(responsePublicKey);
 	}
 	catch (std::system_error& Error)
 	{
