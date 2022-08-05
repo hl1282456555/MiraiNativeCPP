@@ -15,6 +15,7 @@ public:
 
 public:
 	unsigned short ServerPublicKeyVersion = 1;
+	boost::container::vector<uint8> PrivateKey;
 	boost::container::vector<uint8> PublicKey;
 	boost::container::vector<uint8> ShareKey;
 };

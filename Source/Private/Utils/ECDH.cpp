@@ -26,30 +26,12 @@ FECDH FECDH::createDefault()
 
 void FECDH::generateKey(const boost::container::string& InPublicKey)
 {
-	EC_KEY* serverECKey = nullptr;
 	EC_KEY* selfECKey = nullptr;
-	EC_POINT* computedPoint = nullptr;
-	BIGNUM* computedX = nullptr;
-	BIGNUM* computedY = nullptr;
+	const EC_GROUP* selfGroup = nullptr;
+	EC_POINT* serverPublicKey;
 
 	try
 	{
-
-		boost::container::vector<unsigned char> decodedServerRawPublicKey;
-		boost::algorithm::unhex(InPublicKey, std::back_inserter(decodedServerRawPublicKey));
-
-		// convert ServerPublicKey from oct string to EC_KEY
-		serverECKey = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
-		if (serverECKey == nullptr)
-		{
-			throw std::exception();
-		}
-
-		if ((EC_KEY_oct2key(serverECKey, decodedServerRawPublicKey.data(), decodedServerRawPublicKey.size(), NULL) != 0) || (EC_KEY_check_key(serverECKey) != 1))
-		{
-			throw std::exception();
-		}
-
 		// generate self ec key
 		selfECKey = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
 		if (selfECKey == nullptr)
@@ -61,49 +43,44 @@ void FECDH::generateKey(const boost::container::string& InPublicKey)
 		{
 			throw std::exception();
 		}
-
-		computedPoint = EC_POINT_new(EC_KEY_get0_group(serverECKey));
-		if (computedPoint == nullptr)
-		{
-			throw std::exception();
-		}
-
-		const BIGNUM* selfPrivateKey = EC_KEY_get0_private_key(selfECKey);
-		if (EC_POINT_mul(EC_KEY_get0_group(serverECKey), computedPoint, nullptr, EC_KEY_get0_public_key(serverECKey), selfPrivateKey, nullptr) != 1)
-		{
-			throw std::exception();
-		}
-
-		computedX = BN_new();
-		computedY = BN_new();
-		if (computedX == nullptr || computedY == nullptr)
-		{
-			throw std::exception();
-		}
-
-		if (EC_POINT_get_affine_coordinates(EC_KEY_get0_group(serverECKey), computedPoint, computedX, computedY, nullptr) != 1)
-		{
-			throw std::exception();
-		}
-
-		ShareKey.resize(BN_num_bytes(computedX));
-		BN_bn2bin(computedX, ShareKey.data());
-
-		ShareKey = FMD5::ToByteArray(ShareKey.data(), 16);
 		
-		std::size_t keyByteSize = EC_POINT_point2oct(EC_KEY_get0_group(selfECKey), EC_KEY_get0_public_key(selfECKey), POINT_CONVERSION_UNCOMPRESSED, nullptr, 0, nullptr);
+		std::size_t keyByteSize = EC_POINT_point2oct(selfGroup, EC_KEY_get0_public_key(selfECKey), POINT_CONVERSION_UNCOMPRESSED, nullptr, 0, nullptr);
 		PublicKey.resize(keyByteSize);
 
 		if (EC_POINT_point2oct(EC_KEY_get0_group(selfECKey), EC_KEY_get0_public_key(selfECKey), POINT_CONVERSION_UNCOMPRESSED, PublicKey.data(), keyByteSize, nullptr) == 0)
 		{
 			throw std::exception();
 		}
-		
+
+		const BIGNUM* selfPrivateKey = EC_KEY_get0_private_key(selfECKey);
+		if (selfPrivateKey)
+		{
+			throw std::exception();
+		}
+
+		PrivateKey.resize(BN_num_bytes(selfPrivateKey));
+		BN_bn2bin(selfPrivateKey, PrivateKey.data());
+
+		serverPublicKey = EC_POINT_new(selfGroup);
+		if (EC_POINT_oct2point(selfGroup, serverPublicKey, reinterpret_cast<const unsigned char*>(InPublicKey.data()), InPublicKey.size(), NULL) != 1)
+		{
+			throw std::exception();
+		}
+
+		EC_KEY_set_public_key(selfECKey, serverPublicKey);
+
+		ShareKey.resize(100);
+		int32 shareKeyLength = ECDH_compute_key(ShareKey.data(), 100, serverPublicKey, selfECKey, NULL);
+		if (shareKeyLength <= 0)
+		{
+			throw std::exception();
+		}
+
+		ShareKey.resize(shareKeyLength);
+
+		EC_POINT_clear_free(serverPublicKey);
 		EC_KEY_free(selfECKey);
-		EC_KEY_free(serverECKey);
-		EC_POINT_free(computedPoint);
-		BN_free(computedX);
-		BN_free(computedY);
+		CRYPTO_cleanup_all_ex_data();
 	}
 	catch (std::exception& e)
 	{
@@ -112,26 +89,12 @@ void FECDH::generateKey(const boost::container::string& InPublicKey)
 			EC_KEY_free(selfECKey);
 		}
 
-		if (serverECKey != nullptr)
+		if (serverPublicKey != nullptr)
 		{
-			EC_KEY_free(serverECKey);
-		}
-
-		if (computedPoint != nullptr)
-		{
-			EC_POINT_free(computedPoint);
-		}
-
-		if (computedX != nullptr)
-		{
-			BN_free(computedX);
-		}
-
-		if (computedY != nullptr)
-		{
-			BN_free(computedY);
+			EC_POINT_free(serverPublicKey);
 		}
 	}
+
 }
 
 void FECDH::fetchPublickKeyFromServer(uint64 InUin)
