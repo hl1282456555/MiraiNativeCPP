@@ -7,39 +7,39 @@
 
 struct FOSVersion
 {
-	boost::container::vector<unsigned char>	Incremental;
-	boost::container::vector<unsigned char>	Release;
-	boost::container::vector<unsigned char>	CodeName;
+	boost::container::vector<uint8>	Incremental;
+	boost::container::vector<uint8>	Release;
+	boost::container::vector<uint8>	CodeName;
 	unsigned int SDK;
 };
 
 struct FDeviceInfo
 {
-	boost::container::vector<unsigned char>	Display;
-	boost::container::vector<unsigned char>	Product;
-	boost::container::vector<unsigned char>	Device;
-	boost::container::vector<unsigned char>	Board;
-	boost::container::vector<unsigned char>	Brand;
-	boost::container::vector<unsigned char> Model;
-	boost::container::vector<unsigned char> Bootloader;
-	boost::container::vector<unsigned char> FingerPrint;
-	boost::container::vector<unsigned char> BootId;
-	boost::container::vector<unsigned char> ProcVersion;
-	boost::container::vector<unsigned char> BaseBand;
-	boost::container::vector<unsigned char> SimInfo;
-	boost::container::vector<unsigned char> OSType;
-	boost::container::vector<unsigned char> MacAddress;
-	boost::container::vector<unsigned char> IPAddress;
-	boost::container::vector<unsigned char> WifiBSSID;
-	boost::container::vector<unsigned char> WifiSSID;
-	boost::container::vector<unsigned char> IMSIMD5;
-	boost::container::vector<unsigned char> IMEI;
-	boost::container::vector<unsigned char> AndroidId;
-	boost::container::vector<unsigned char> APN;
-	boost::container::vector<unsigned char> VendorName;
-	boost::container::vector<unsigned char> VendorOSName;
-	boost::container::vector<unsigned char> Guid;
-	boost::container::vector<unsigned char> TgtgtKey;
+	boost::container::vector<uint8>	Display;
+	boost::container::vector<uint8>	Product;
+	boost::container::vector<uint8>	Device;
+	boost::container::vector<uint8>	Board;
+	boost::container::vector<uint8>	Brand;
+	boost::container::vector<uint8> Model;
+	boost::container::vector<uint8> Bootloader;
+	boost::container::vector<uint8> FingerPrint;
+	boost::container::vector<uint8> BootId;
+	boost::container::vector<uint8> ProcVersion;
+	boost::container::vector<uint8> BaseBand;
+	boost::container::vector<uint8> SimInfo;
+	boost::container::vector<uint8> OSType;
+	boost::container::vector<uint8> MacAddress;
+	boost::container::vector<uint8> IPAddress;
+	boost::container::vector<uint8> WifiBSSID;
+	boost::container::vector<uint8> WifiSSID;
+	boost::container::vector<uint8> IMSIMD5;
+	boost::container::vector<uint8> IMEI;
+	boost::container::vector<uint8> AndroidId;
+	boost::container::vector<uint8> APN;
+	boost::container::vector<uint8> VendorName;
+	boost::container::vector<uint8> VendorOSName;
+	boost::container::vector<uint8> Guid;
+	boost::container::vector<uint8> TgtgtKey;
 	EProtocolType							Protocol;
 	FOSVersion								Version;
 };

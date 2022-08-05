@@ -16,7 +16,7 @@ public:
 	* @param	ByteCount	How many byte will generated.
 	* @return	The generated random byte array.
 	*/
-	static boost::container::vector<unsigned char> generateRandomBytes(unsigned int ByteCount);
+	static boost::container::vector<uint8> generateRandomBytes(uint32 ByteCount);
 
 	/**
 	* Generate a random int in range [Min, Max].
@@ -25,7 +25,7 @@ public:
 	* @param	Max	The maximum value that will be generated.
 	* @return	The generated random value.
 	*/
-	static int generateInt(int Min, int Max);
+	static int32 generateInt(int32 Min, int32 Max);
 };
 
 EXPORT_SCOPE_END

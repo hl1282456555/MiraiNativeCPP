@@ -17,55 +17,55 @@ enum class EProtocolType
 
 struct FAppVersion
 {
-	boost::container::vector<unsigned char> ApkSign;
+	boost::container::vector<uint8> ApkSign;
 	boost::container::string ApkId;
 	boost::container::string SortVersionName;
 	boost::container::string SdkVersion;
-	unsigned int AppId;
-	unsigned int SubAppId;
-	unsigned int BuildTime;
-	unsigned int SSOVersion;
-	unsigned int MiscBitmap;
-	unsigned int SubSigmap;
-	unsigned int MainSigmap;
+	uint32 AppId;
+	uint32 SubAppId;
+	uint32 BuildTime;
+	uint32 SSOVersion;
+	uint32 MiscBitmap;
+	uint32 SubSigmap;
+	uint32 MainSigmap;
 	EProtocolType Protocol;
 };
 
 struct FSigInfo
 {
-	unsigned long long LoginBitmap;
-	unsigned long long SKeyExpiredTime;
+	uint64 LoginBitmap;
+	uint64 SKeyExpiredTime;
 
-	boost::container::vector<unsigned char> TGT;
-	boost::container::vector<unsigned char> TGTKey;
+	boost::container::vector<uint8> TGT;
+	boost::container::vector<uint8> TGTKey;
 
 	// study room manager | 0x16a
-	boost::container::vector<unsigned char> SrmToken;
-	boost::container::vector<unsigned char> T133;
-	boost::container::vector<unsigned char> EncryptedA1;
-	boost::container::vector<unsigned char> UserStKey;
-	boost::container::vector<unsigned char> UserStWebSig;
-	boost::container::vector<unsigned char> SKey;
-	boost::container::vector<unsigned char> D2;
-	boost::container::vector<unsigned char> D2Key;
-	boost::container::vector<unsigned char> DeviceToken;
-	boost::container::vector<unsigned char> OutPacketSessionID;
-	boost::container::vector<unsigned char> Dpwd;
-	boost::container::map<boost::container::string, boost::container::vector<char>> PsKeyMap;
-	boost::container::map<boost::container::string, boost::container::vector<char>> Pt4TokenMap;
+	boost::container::vector<uint8> SrmToken;
+	boost::container::vector<uint8> T133;
+	boost::container::vector<uint8> EncryptedA1;
+	boost::container::vector<uint8> UserStKey;
+	boost::container::vector<uint8> UserStWebSig;
+	boost::container::vector<uint8> SKey;
+	boost::container::vector<uint8> D2;
+	boost::container::vector<uint8> D2Key;
+	boost::container::vector<uint8> DeviceToken;
+	boost::container::vector<uint8> OutPacketSessionID;
+	boost::container::vector<uint8> Dpwd;
+	boost::container::map<boost::container::string, boost::container::vector<int8>> PsKeyMap;
+	boost::container::map<boost::container::string, boost::container::vector<int8>> Pt4TokenMap;
 
 	// tlv cache
-	boost::container::vector<unsigned char> T104;
-	boost::container::vector<unsigned char> T174;
-	boost::container::vector<unsigned char> G;
-	boost::container::vector<unsigned char> T402;
-	boost::container::vector<unsigned char> RandSeed; // t403
-	boost::container::vector<unsigned char> T547;
+	boost::container::vector<uint8> T104;
+	boost::container::vector<uint8> T174;
+	boost::container::vector<uint8> G;
+	boost::container::vector<uint8> T402;
+	boost::container::vector<uint8> RandSeed; // t403
+	boost::container::vector<uint8> T547;
 
 	// sync info
-	boost::container::vector<unsigned char> SyncCookie;
-	boost::container::vector<unsigned char> PubAccountCookie;
-	boost::container::vector<unsigned char> Ksid;
+	boost::container::vector<uint8> SyncCookie;
+	boost::container::vector<uint8> PubAccountCookie;
+	boost::container::vector<uint8> Ksid;
 };
 
 static boost::container::map<EProtocolType, FAppVersion> AppVersionMap

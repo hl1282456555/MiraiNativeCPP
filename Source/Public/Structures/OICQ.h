@@ -8,8 +8,8 @@
 struct FOICQCodec
 {
 	FECDH ECDHInfo;
-	boost::container::vector<unsigned char> RandomKey;
-	boost::container::vector<unsigned char> WtSessionTicketKey;
+	boost::container::vector<uint8> RandomKey;
+	boost::container::vector<uint8> WtSessionTicketKey;
 };
 
 #endif

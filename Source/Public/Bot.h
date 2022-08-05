@@ -20,7 +20,7 @@ EXPORT_SCOPE_START
 class MIRAI_NATIVE_CPP_API ABot
 {
 public:
-	ABot(unsigned long long InAccount, const boost::container::string& InPassword);
+	ABot(uint64 InAccount, const boost::container::string& InPassword);
 	virtual ~ABot();
 
 	virtual bool Connect();
@@ -35,7 +35,7 @@ protected:
 	boost::log::sources::wseverity_logger_mt<boost::log::trivial::severity_level> BotLogger;
 
 	// Bot account
-	unsigned long long Uin;
+	uint64 Uin;
 
 	// Bot password
 	boost::container::string Password;
@@ -50,11 +50,11 @@ protected:
 	FDeviceInfo DeviceInfo;
 	FOICQCodec OICQCodec;
 
-	int SequenceId;
-	int RequestPacketRequestId;
-	int GroupSequence;
-	int FriendSequence;
-	int HighwayApplyUpSequence;
+	int32 SequenceId;
+	int32 RequestPacketRequestId;
+	int32 GroupSequence;
+	int32 FriendSequence;
+	int32 HighwayApplyUpSequence;
 
 	FHighwaySession	HighwaySession;
 

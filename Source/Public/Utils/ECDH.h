@@ -11,12 +11,12 @@ class MIRAI_NATIVE_CPP_API FECDH
 public:
 	static FECDH createDefault();
 	void generateKey(const boost::container::string& InPublicKey);
-	void fetchPublickKeyFromServer(unsigned long long InUin);
+	void fetchPublickKeyFromServer(uint64 InUin);
 
 public:
 	unsigned short ServerPublicKeyVersion = 1;
-	boost::container::vector<unsigned char> PublicKey;
-	boost::container::vector<unsigned char> ShareKey;
+	boost::container::vector<uint8> PublicKey;
+	boost::container::vector<uint8> ShareKey;
 };
 
 EXPORT_SCOPE_END

@@ -134,7 +134,7 @@ void FECDH::generateKey(const boost::container::string& InPublicKey)
 	}
 }
 
-void FECDH::fetchPublickKeyFromServer(unsigned long long InUin)
+void FECDH::fetchPublickKeyFromServer(uint64 InUin)
 {
 	boost::container::string url = "https://keyrotate.qq.com/rotate_key?cipher_suite_ver=305&uin=" + boost::lexical_cast<boost::container::string>(InUin);
 	cpr::Response response = cpr::Get(cpr::Url{ url.c_str() });

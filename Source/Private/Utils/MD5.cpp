@@ -6,9 +6,9 @@
 
 static 	const char HexMap[] = "0123456789ABCDEF";
 
-boost::container::vector<unsigned char> FMD5::ToByteArray(const unsigned char* Source, std::size_t SourceLen)
+boost::container::vector<uint8> FMD5::ToByteArray(const uint8* Source, std::size_t SourceLen)
 {
-	boost::container::vector<unsigned char> result;
+	boost::container::vector<uint8> result;
 
 	if (Source == nullptr || SourceLen < 1)
 	{

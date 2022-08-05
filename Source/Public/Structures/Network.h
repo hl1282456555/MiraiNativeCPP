@@ -13,18 +13,18 @@
 
 struct FNetAddress
 {
-	unsigned int	IP;
-	int				Port;
+	uint32	IP;
+	int32	Port;
 };
 
 struct FHighwaySession
 {
 	boost::container::string				Uin;
-	unsigned int							AppID;
-	boost::container::vector<unsigned char>	SigSession;
-	boost::container::vector<unsigned char>	SessionKey;
+	uint32									AppID;
+	boost::container::vector<uint8>			SigSession;
+	boost::container::vector<uint8>			SessionKey;
 	FNetAddress								SsoAddr;
-	unsigned int							Sequence;
+	uint32									Sequence;
 };
 
 struct FTransport

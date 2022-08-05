@@ -11,7 +11,7 @@ EXPORT_SCOPE_START
 class MIRAI_NATIVE_CPP_API FMD5
 {
 public:
-	static boost::container::vector<unsigned char> ToByteArray(const unsigned char* Source, std::size_t SourceLen);
+	static boost::container::vector<uint8> ToByteArray(const uint8* Source, std::size_t SourceLen);
 
 	static boost::container::string ToHex(const char* Source, std::size_t SourceLen);
 

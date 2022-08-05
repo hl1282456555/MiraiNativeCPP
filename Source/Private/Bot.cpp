@@ -21,7 +21,7 @@
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(attr_botaccount, "BotAccount", unsigned long long)
 
-ABot::ABot(unsigned long long InAccount, const boost::container::string& InPassword) 
+ABot::ABot(uint64 InAccount, const boost::container::string& InPassword) 
 	: Uin(InAccount)
 	, Connector(IOContext)
 {
