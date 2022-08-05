@@ -1,5 +1,7 @@
 #include "Bot.h"
 
+#include "Globals.h"
+
 #include "Utils/MD5.h"
 #include "Utils/RandomUtils.h"
 
@@ -37,11 +39,13 @@ ABot::ABot(uint64 InAccount, const boost::container::string& InPassword)
 
 	SequenceId = 0x3635;
 	RequestPacketRequestId = 1921334513;
-	GroupSequence = URandomUtils::generateInt(0, 1999);
-	FriendSequence = 22911;
-	HighwayApplyUpSequence = 77918;
+	GroupSeq = URandomUtils::generateInt(0, 1999);
+	FriendSeq = 22911;
+	HighwayApplyUpSeq = 77918;
 
 	HighwaySession.Uin = boost::lexical_cast<boost::container::string>(Uin);
+
+	UseDevice(SystemDeviceInfo);
 }
 
 ABot::~ABot()
@@ -86,4 +90,12 @@ void ABot::InitLogger()
 	consoleSink->imbue(wideLocale);
 
 	boost::log::add_common_attributes();
+}
+
+void ABot::UseDevice(const FDeviceInfo& InDeviceInfo)
+{
+	AppVersion = AppVersionMap.find(InDeviceInfo.Protocol) != AppVersionMap.end() ? AppVersionMap[InDeviceInfo.Protocol] : FAppVersion();
+	DeviceInfo = InDeviceInfo;
+	HighwaySession.AppID = AppVersion.AppId;
+	Signature.Ksid = "|" + InDeviceInfo.IMEI + "|A8.2.7.27f6ea96";
 }

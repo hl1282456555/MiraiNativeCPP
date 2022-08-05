@@ -9,13 +9,8 @@
 
 #include <boost/container/string.hpp>
 #include <boost/container/vector.hpp>
-#include <boost/asio/streambuf.hpp>
 
-struct FNetAddress
-{
-	uint32	IP;
-	int32	Port;
-};
+#include <boost/asio/ip/tcp.hpp>
 
 struct FHighwaySession
 {
@@ -23,7 +18,7 @@ struct FHighwaySession
 	uint32									AppID;
 	boost::container::vector<uint8>			SigSession;
 	boost::container::vector<uint8>			SessionKey;
-	FNetAddress								SsoAddr;
+	boost::asio::ip::tcp::endpoint			SSOAddr;
 	uint32									Sequence;
 };
 
