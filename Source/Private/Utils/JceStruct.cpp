@@ -1,114 +1,174 @@
 #include "Utils/JceStruct.h"
 
-#include <boost/container/string.hpp>
-
 template <typename ValueType>
 void toBytes(const ValueType& Value, boost::container::vector<uint8>& Out)
 {
-	uint8* tempBytes = new uint8[sizeof(ValueType)];
-	std::memcpy(tempBytes, &Value, sizeof(ValueType));
-	Out.insert(Out.end(), tempBytes, tempBytes + sizeof(tempBytes));
-
-	delete[] tempBytes;
+	uint8* cachedBytes = new uint8[sizeof(ValueType)];
+	Out.insert(Out.cend(), cachedBytes, cachedBytes + sizeof(cachedBytes));
+	delete[] cachedBytes;
 }
 
-FJceDataValue::FJceDataValue(uint8 Value)
-	: Type(EJceDataType::Byte)
+void FJceDataBase::writeHead(boost::container::vector<uint8>& Out) const
 {
-	toBytes(Value, Data);
-}
-
-FJceDataValue::FJceDataValue(bool Value)
-	: Type(EJceDataType::Byte)
-{
-	toBytes(Value, Data);
-}
-
-FJceDataValue::FJceDataValue(int16 Value)
-	: Type(EJceDataType::Short)
-{
-	toBytes(Value, Data);
-}
-
-FJceDataValue::FJceDataValue(int32 Value)
-	: Type(EJceDataType::Int)
-{
-	toBytes(Value, Data);
-}
-
-FJceDataValue::FJceDataValue(int64 Value)
-	: Type(EJceDataType::Long)
-{
-	toBytes(Value, Data);
-}
-
-FJceDataValue::FJceDataValue(float Value)
-	: Type(EJceDataType::Float)
-{
-	toBytes(Value, Data);
-}
-
-FJceDataValue::FJceDataValue(double Value)
-	: Type(EJceDataType::Double)
-{
-	toBytes(Value, Data);
-}
-
-FJceDataValue::FJceDataValue(const boost::container::string& Value)
-{
-	const std::size_t stringLength = Value.size();
-	if (stringLength <= 255)
+	if (Tag < 15)
 	{
-		Type = EJceDataType::ShortString;
-		const uint8 shortLength = static_cast<uint8>(stringLength);
+		// +-------------------+
+		// | 1 1 1 1 | 1 1 1 1 |
+		// +---------+---------+
+		// |   type  |   tag   |
+		// +---------+---------+
 
-		toBytes(shortLength, Data);
+		uint8 headByte = (Tag << 4) | static_cast<uint8>(getType());
+		Out.push_back(headByte);
+	}
+	else if (Tag < 256)
+	{
+		uint8 headByte[2] = {0xF0, 0x00};
+		headByte[0] |= static_cast<uint8>(getType());
+		headByte[1] = static_cast<uint8>(Tag);
+
+		Out.insert(Out.cend(), headByte, headByte + 2);
 	}
 	else
 	{
-		Type = EJceDataType::LongString;
-		const int32 longLength = static_cast<int32>(stringLength);
-
-		toBytes(longLength, Data);
+		throw std::exception("Wrong tag value.");
 	}
-
-	Data.insert(Data.cend(), Value.cbegin(), Value.cend());
 }
 
-FJceDataValue::FJceDataValue(const boost::container::vector<FJceDataValue>& Value)
-	: Type(EJceDataType::List)
+FJceDataByte::FJceDataByte(int8 InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(InValue)
 {
-	const int32 listCount = static_cast<int32>(Value.size());
-	toBytes(listCount, Data);
+}
 
-	for (const FJceDataValue& valueItem : Value)
+FJceDataByte::FJceDataByte(bool InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(static_cast<int8>(InValue))
+{
+}
+
+boost::container::vector<uint8> FJceDataByte::getRawData() const
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+	toBytes(Value, result);
+
+	return result;
+}
+
+FJceDataShort::FJceDataShort(int16 InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(InValue)
+{
+
+}
+
+boost::container::vector<uint8> FJceDataShort::getRawData() const
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+	toBytes(Value, result);
+
+	return result;
+}
+
+FJceDataInt::FJceDataInt(int32 InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(InValue)
+{
+}
+
+boost::container::vector<uint8> FJceDataInt::getRawData() const
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+	toBytes(Value, result);
+
+	return result;
+}
+
+FJceDataLong::FJceDataLong(int64 InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(InValue)
+{
+}
+
+boost::container::vector<uint8> FJceDataLong::getRawData() const
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+	toBytes(Value, result);
+
+	return result;
+}
+
+FJceDataFloat::FJceDataFloat(float InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(InValue)
+{
+}
+
+boost::container::vector<uint8> FJceDataFloat::getRawData() const
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+	toBytes(Value, result);
+
+	return result;
+}
+
+FJceDataDouble::FJceDataDouble(double InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(InValue)
+{
+}
+
+boost::container::vector<uint8> FJceDataDouble::getRawData() const
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+	toBytes(Value, result);
+
+	return result;
+}
+
+FJceDataString::FJceDataString(const boost::container::string& InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(InValue)
+{
+}
+
+boost::container::vector<uint8> FJceDataString::getRawData() const
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+	result.insert(result.cend(), Value.cbegin(), Value.cend());
+
+	return result;
+}
+
+FJceDataMap::FJceDataMap(const boost::container::map<boost::shared_ptr<FJceDataBase>, const boost::shared_ptr<FJceDataBase>>& InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(InValue)
+{
+}
+
+void FJceDataMap::add(const boost::shared_ptr<FJceDataBase>& InKey, const boost::shared_ptr<FJceDataBase>& InValue)
+{
+	if (!InKey || !InValue)
 	{
-		Data.insert(Data.cend(), valueItem.getData().cbegin(), valueItem.getData().cend());
+		throw std::exception("Empty parameter passed in the FJceDataMap::add method.");
 	}
+
+	Value[InKey] = InValue;
 }
 
-FJceDataValue::FJceDataValue(const boost::container::map<FJceHeadData, FJceDataValue>& Value)
-	: Type(EJceDataType::Map)
+boost::container::vector<uint8> FJceDataMap::getRawData() const
 {
-	const int32 mapCount = static_cast<int32>(Value.size());
-	toBytes(mapCount, Data);
 
-	for (auto it = Value.cbegin(); it != Value.cend(); ++it)
-	{
-		if (it->first.Tag < 16)
-		{
-			const int32 computeHead = (it->first.Tag << 4) | static_cast<int32>(it->first.Type);
-			toBytes(computeHead, Data);
-		}
-		else if (it->first.Tag < 256)
-		{
-			const int32 intType = static_cast<int32>(it->first.Type) | 0xF0;
-			toBytes(intType, Data);
-			toBytes(it->first.Tag, Data);
-		}
-	}
 }
 
-FJceDataValue::FJceDataValue(const FJceStruct& Value)
+void FJceDataMap::writeHead(boost::container::vector<uint8>& Out) const
 {
+
 }

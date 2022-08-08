@@ -5,6 +5,10 @@
 
 #include <boost/container/vector.hpp>
 #include <boost/container/map.hpp>
+#include <boost/container/string.hpp>
+#include <boost/container/list.hpp>
+
+#include <boost/smart_ptr/shared_ptr.hpp>
 
 enum class EJceDataType
 {
@@ -20,72 +24,203 @@ enum class EJceDataType
 	List = 9,
 	StructBegin = 10,	// subclass of FJceStruct
 	StructEnd = 11,		// subclass of FJceStruct
-	ZeroTag = 12
+	ZeroTag = 12,
+	TYPE_SIMPLE_LIST = 13
 };
 
-struct FJceHeadData
+class MIRAI_NATIVE_CPP_API FJceDataBase
 {
+public:
+	FJceDataBase(int32 InTag)
+		: Tag(InTag)
+	{
+
+	}
+
+	virtual ~FJceDataBase() = 0;
+
+	int32 getTag() const { return Tag; }
+
+	virtual EJceDataType getType() const = 0;
+	virtual boost::container::vector<uint8> getRawData() const = 0;
+
+protected:
+	virtual void writeHead(boost::container::vector<uint8>& Out) const;
+
+protected:
 	int32 Tag;
-	EJceDataType Type;
 };
 
-class MIRAI_NATIVE_CPP_API FJceDataValue
+class MIRAI_NATIVE_CPP_API FJceDataByte : public FJceDataBase
 {
 public:
-	explicit FJceDataValue(uint8 Value);
-	explicit FJceDataValue(bool Value);
-	explicit FJceDataValue(int16 Value);
-	explicit FJceDataValue(int32 Value);
-	explicit FJceDataValue(int64 Value);
-	explicit FJceDataValue(float Value);
-	explicit FJceDataValue(double Value);
-	explicit FJceDataValue(const boost::container::string& Value);
-	explicit FJceDataValue(const boost::container::vector<FJceDataValue>& Value);
-	explicit FJceDataValue(const boost::container::map<FJceHeadData, FJceDataValue>& Value);
-	explicit FJceDataValue(const class FJceStruct& Value);
+	FJceDataByte(int8 InValue, int32 InTag);
+	FJceDataByte(bool InValue, int32 InTag);
+	virtual ~FJceDataByte() {}
 
-	const boost::container::vector<uint8> getData() const;
+	virtual EJceDataType getType() const override { return EJceDataType::Byte; }
+	virtual boost::container::vector<uint8> getRawData() const override;
 
-	operator uint8() const;
-	operator bool() const;
-	operator int16() const;
-	operator int32() const;
-	operator int64() const;
-	operator float() const;
-	operator double() const;
-	operator boost::container::string() const;
-	operator boost::container::vector<FJceDataValue>() const;
-	operator boost::container::map<FJceHeadData, FJceDataValue>() const;
-	operator FJceStruct() const;
-
-
-private:
-	EJceDataType Type;
-	boost::container::vector<uint8> Data;
+protected:
+	int8 Value;
 };
 
-struct FJcePair
-{
-	FJceHeadData HeadData;
-	FJceDataValue Value;
-};
-
-class MIRAI_NATIVE_CPP_API FJceStruct
+class MIRAI_NATIVE_CPP_API FJceDataShort : public FJceDataBase
 {
 public:
-	FJceStruct();
-	FJceStruct(const boost::container::vector<uint8>& RawData);
+	FJceDataShort(int16 InValue, int32 InTag);
+	virtual ~FJceDataShort() {}
 
-	void writeValue(const FJceDataValue& Value, uint8 Tag);
+	virtual EJceDataType getType() const override { return EJceDataType::Short; }
+	virtual boost::container::vector<uint8> getRawData() const override;
 
-	FJcePair readPair();
+protected:
+	int16 Value;
+};
 
-private:
-	void writeHeadData(const FJceHeadData& HeadData);
-	FJceHeadData readHeadData();
+class MIRAI_NATIVE_CPP_API FJceDataInt : public FJceDataBase
+{
+public:
+	FJceDataInt(int32 InValue, int32 InTag);
+	virtual ~FJceDataInt() {}
 
-private:
-	boost::container::vector<uint8> StructData;
+	virtual EJceDataType getType() const override { return EJceDataType::Int; }
+	virtual boost::container::vector<uint8> getRawData() const override;
+
+protected:
+	int32 Value;
+};
+
+class MIRAI_NATIVE_CPP_API FJceDataLong : public FJceDataBase
+{
+public:
+	FJceDataLong(int64 InValue, int32 InTag);
+	virtual ~FJceDataLong() {}
+
+	virtual EJceDataType getType() const override { return EJceDataType::Long; }
+	virtual boost::container::vector<uint8> getRawData() const override;
+
+protected:
+	int64 Value;
+};
+
+class MIRAI_NATIVE_CPP_API FJceDataFloat : public FJceDataBase
+{
+public:
+	FJceDataFloat(float InValue, int32 InTag);
+	virtual ~FJceDataFloat() {}
+
+	virtual EJceDataType getType() const override { return EJceDataType::Float; }
+	virtual boost::container::vector<uint8> getRawData() const override;
+
+protected:
+	float Value;
+};
+
+class MIRAI_NATIVE_CPP_API FJceDataDouble : public FJceDataBase
+{
+public:
+	FJceDataDouble(double InValue, int32 InTag);
+	virtual ~FJceDataDouble() {}
+
+	virtual EJceDataType getType() const override { return EJceDataType::Double; }
+	virtual boost::container::vector<uint8> getRawData() const override;
+
+protected:
+	double Value;
+};
+
+class MIRAI_NATIVE_CPP_API FJceDataString : public FJceDataBase
+{
+public:
+	FJceDataString(const boost::container::string& InValue, int32 InTag);
+	virtual ~FJceDataString() {}
+
+	virtual EJceDataType getType() const override { return Value.size() <= 256 ? EJceDataType::ShortString : EJceDataType::LongString; }
+	virtual boost::container::vector<uint8> getRawData() const override;
+
+protected:
+	boost::container::string Value;
+};
+
+class MIRAI_NATIVE_CPP_API FJceDataMap : public FJceDataBase
+{
+public:
+	FJceDataMap(const boost::container::map<boost::shared_ptr<FJceDataBase>, const boost::shared_ptr<FJceDataBase>>& InValue, int32 InTag);
+	virtual ~FJceDataMap() {}
+
+	void add(const boost::shared_ptr<FJceDataBase>& InKey, const boost::shared_ptr<FJceDataBase>& InValue);
+
+	virtual EJceDataType getType() const override { return EJceDataType::Map; }
+	virtual boost::container::vector<uint8> getRawData() const override;
+
+protected:
+	virtual void writeHead(boost::container::vector<uint8>& Out) const override;
+
+protected:
+	boost::container::map<boost::shared_ptr<FJceDataBase>, boost::shared_ptr<FJceDataBase>> Value;
+};
+
+class MIRAI_NATIVE_CPP_API FJceDataList : public FJceDataBase
+{
+public:
+	FJceDataList(const boost::container::list<boost::shared_ptr<FJceDataBase>>& Value, int32 InTag);
+	virtual ~FJceDataList() {}
+
+	void add(const boost::shared_ptr<FJceDataBase>& NewItem);
+
+	virtual EJceDataType getType() const override { return EJceDataType::List; }
+	virtual boost::container::vector<uint8> getRawData() const override;
+
+protected:
+	boost::container::list<boost::shared_ptr<FJceDataBase>> Value;
+};
+
+class MIRAI_NATIVE_CPP_API FJceDataSimpleShortList : public FJceDataBase
+{
+public:
+	FJceDataSimpleShortList(const boost::container::vector<int16>& InValue, int32 InTag, int32 InListTag);
+	virtual ~FJceDataSimpleShortList() {}
+
+	void append(const boost::shared_ptr<FJceDataBase>& NewItem);
+
+	virtual EJceDataType getType() const override { return EJceDataType::List; }
+	virtual boost::container::vector<uint8> getRawData() const override;
+
+protected:
+	int32 ListTag;
+	boost::container::vector<int16> Value;
+};
+
+class MIRAI_NATIVE_CPP_API FJceDataSimpleByteList : public FJceDataBase
+{
+public:
+	FJceDataSimpleByteList(const boost::container::vector<int8>& InValue, int32 InTag, int32 InListTag);
+	virtual ~FJceDataSimpleByteList() {}
+
+	void append(const boost::shared_ptr<FJceDataBase>& NewItem);
+
+	virtual EJceDataType getType() const override { return EJceDataType::List; }
+	virtual boost::container::vector<uint8> getRawData() const override;
+
+protected:
+	int32 ListTag;
+	boost::container::vector<int8> Value;
+};
+
+class MIRAI_NATIVE_CPP_API FJceDataStruct : public FJceDataBase
+{
+public:
+	FJceDataStruct(const boost::container::list<boost::shared_ptr<FJceDataBase>>& Value, int32 InTag);
+	virtual ~FJceDataStruct() {}
+
+	void add(const boost::shared_ptr<FJceDataBase>& NewItem);
+
+	virtual EJceDataType getType() const override { return EJceDataType::StructBegin; }
+	virtual boost::container::vector<uint8> getRawData() const override;
+
+protected:
+	boost::container::list<boost::shared_ptr<FJceDataBase>> Value;
 };
 
 #endif
