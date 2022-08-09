@@ -6,7 +6,7 @@
 
 #include <boost/container/vector.hpp>
 
-class MIRAI_NATIVE_CPP_API FMemoryWriter : FMemoryArchive
+class MIRAI_NATIVE_CPP_API FMemoryWriter : public FMemoryArchive
 {
 public:
 	FMemoryWriter(boost::container::vector<uint8>& InBytes, bool bSetOffset = false);

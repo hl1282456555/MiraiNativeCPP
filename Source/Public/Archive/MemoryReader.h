@@ -10,6 +10,7 @@ class MIRAI_NATIVE_CPP_API FMemoryReader : public FMemoryArchive
 {
 public:
 	FMemoryReader(const boost::container::vector<uint8>& InBytes);
+	virtual ~FMemoryReader() {}
 
 	virtual boost::container::string getArchiveName() const override { return "FMemoryReader"; }
 

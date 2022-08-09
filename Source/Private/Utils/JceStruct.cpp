@@ -1,12 +1,8 @@
 #include "Utils/JceStruct.h"
 
-template <typename ValueType>
-void toBytes(const ValueType& Value, boost::container::vector<uint8>& Out)
-{
-	uint8* cachedBytes = new uint8[sizeof(ValueType)];
-	Out.insert(Out.cend(), cachedBytes, cachedBytes + sizeof(cachedBytes));
-	delete[] cachedBytes;
-}
+#include <boost/smart_ptr/make_shared_object.hpp>
+
+#include "Archive/MemoryWriter.h"
 
 void FJceDataBase::writeHead(boost::container::vector<uint8>& Out) const
 {
@@ -47,11 +43,13 @@ FJceDataByte::FJceDataByte(bool InValue, int32 InTag)
 {
 }
 
-boost::container::vector<uint8> FJceDataByte::getRawData() const
+boost::container::vector<uint8> FJceDataByte::getRawData()
 {
 	boost::container::vector<uint8> result;
 	writeHead(result);
-	toBytes(Value, result);
+
+	FMemoryWriter writer(result, true);
+	writer << Value;
 
 	return result;
 }
@@ -63,11 +61,13 @@ FJceDataShort::FJceDataShort(int16 InValue, int32 InTag)
 
 }
 
-boost::container::vector<uint8> FJceDataShort::getRawData() const
+boost::container::vector<uint8> FJceDataShort::getRawData()
 {
 	boost::container::vector<uint8> result;
 	writeHead(result);
-	toBytes(Value, result);
+
+	FMemoryWriter writer(result, true);
+	writer << Value;
 
 	return result;
 }
@@ -78,11 +78,13 @@ FJceDataInt::FJceDataInt(int32 InValue, int32 InTag)
 {
 }
 
-boost::container::vector<uint8> FJceDataInt::getRawData() const
+boost::container::vector<uint8> FJceDataInt::getRawData()
 {
 	boost::container::vector<uint8> result;
 	writeHead(result);
-	toBytes(Value, result);
+	
+	FMemoryWriter writer(result, true);
+	writer << Value;
 
 	return result;
 }
@@ -93,11 +95,13 @@ FJceDataLong::FJceDataLong(int64 InValue, int32 InTag)
 {
 }
 
-boost::container::vector<uint8> FJceDataLong::getRawData() const
+boost::container::vector<uint8> FJceDataLong::getRawData()
 {
 	boost::container::vector<uint8> result;
 	writeHead(result);
-	toBytes(Value, result);
+	
+	FMemoryWriter writer(result, true);
+	writer << Value;
 
 	return result;
 }
@@ -108,11 +112,13 @@ FJceDataFloat::FJceDataFloat(float InValue, int32 InTag)
 {
 }
 
-boost::container::vector<uint8> FJceDataFloat::getRawData() const
+boost::container::vector<uint8> FJceDataFloat::getRawData()
 {
 	boost::container::vector<uint8> result;
 	writeHead(result);
-	toBytes(Value, result);
+	
+	FMemoryWriter writer(result, true);
+	writer << Value;
 
 	return result;
 }
@@ -123,11 +129,13 @@ FJceDataDouble::FJceDataDouble(double InValue, int32 InTag)
 {
 }
 
-boost::container::vector<uint8> FJceDataDouble::getRawData() const
+boost::container::vector<uint8> FJceDataDouble::getRawData()
 {
 	boost::container::vector<uint8> result;
 	writeHead(result);
-	toBytes(Value, result);
+	
+	FMemoryWriter writer(result, true);
+	writer << Value;
 
 	return result;
 }
@@ -138,10 +146,24 @@ FJceDataString::FJceDataString(const boost::container::string& InValue, int32 In
 {
 }
 
-boost::container::vector<uint8> FJceDataString::getRawData() const
+boost::container::vector<uint8> FJceDataString::getRawData()
 {
 	boost::container::vector<uint8> result;
 	writeHead(result);
+
+	if (getType() == EJceDataType::ShortString)
+	{
+		const uint8 stringLen = Value.size();
+		result.push_back(stringLen);
+	}
+	else
+	{
+		int32 stringLen = static_cast<int32>(Value.size());
+
+		FMemoryWriter writer(result, true);
+		writer << stringLen;
+	}
+
 	result.insert(result.cend(), Value.cbegin(), Value.cend());
 
 	return result;
@@ -163,12 +185,131 @@ void FJceDataMap::add(const boost::shared_ptr<FJceDataBase>& InKey, const boost:
 	Value[InKey] = InValue;
 }
 
-boost::container::vector<uint8> FJceDataMap::getRawData() const
+boost::container::vector<uint8> FJceDataMap::getRawData()
 {
+	boost::container::vector<uint8> result;
+	writeHead(result);
 
+	int32 mapLen = static_cast<int32>(Value.size());
+	FMemoryWriter writer(result, true);
+	writer << mapLen;
+
+	for (std::pair<boost::shared_ptr<FJceDataBase>, boost::shared_ptr<FJceDataBase>> Pair : Value)
+	{
+		boost::container::vector<uint8> content = Pair.first->getRawData();
+		result.insert(result.cend(), content.cbegin(), content.cend());
+
+		content = Pair.second->getRawData();
+		result.insert(result.cend(), content.cbegin(), content.cend());
+	}
+
+	return result;
 }
 
-void FJceDataMap::writeHead(boost::container::vector<uint8>& Out) const
+FJceDataList::FJceDataList(const boost::container::list<boost::shared_ptr<FJceDataBase>>& InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(InValue)
 {
+}
 
+void FJceDataList::add(const boost::shared_ptr<FJceDataBase>& NewItem)
+{
+	if (!NewItem)
+	{
+		throw std::exception("Add a null pointer to FJceDataList.");
+	}
+
+	Value.push_back(NewItem);
+}
+
+boost::container::vector<uint8> FJceDataList::getRawData()
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+
+	int32 listLen = Value.size();
+	FMemoryWriter writer(result, true);
+	writer << listLen;
+
+	for (const boost::shared_ptr<FJceDataBase>& ListItem : Value)
+	{
+		boost::container::vector<uint8> content = ListItem->getRawData();
+		result.insert(result.cend(), content.cbegin(), content.cend());
+	}
+
+	return result;
+}
+
+FJceDataSimpleList::FJceDataSimpleList(const boost::container::vector<uint8>& InValue, int32 InTag,
+	int32 InListTag)
+		: FJceDataBase(InTag)
+		, Value(InValue)
+{
+}
+
+void FJceDataSimpleList::append(const boost::container::vector<uint8>& NewData)
+{
+	Value.insert(Value.cend(), NewData.cbegin(), NewData.cend());
+}
+
+boost::container::vector<uint8> FJceDataSimpleList::getRawData()
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+
+	int32 dataLen = static_cast<int32>(Value.size());
+
+	FMemoryWriter writer(result, true);
+	writer << dataLen;
+
+	result.insert(result.cend(), Value.cbegin(), Value.cend());
+
+	return result;
+}
+
+FJceDataStruct::FJceDataStruct(const boost::container::list<boost::shared_ptr<FJceDataBase>>& InValue, int32 InTag)
+	: FJceDataBase(InTag)
+	, Value(InValue)
+{
+}
+
+void FJceDataStruct::add(const boost::shared_ptr<FJceDataBase>& NewItem)
+{
+	if (!NewItem)
+	{
+		throw std::exception("The new item for add to FJceDataStruct must not be empty.");
+	}
+
+	Value.push_back(NewItem);
+}
+
+boost::container::vector<uint8> FJceDataStruct::getRawData()
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+
+	Value.push_back(boost::make_shared<FJceDataStructEnd>(0));
+
+	for (const boost::shared_ptr<FJceDataBase>& Item : Value)
+	{
+		boost::container::vector<uint8> itemData = Item->getRawData();
+		result.insert(result.cend(), itemData.cbegin(), itemData.cend());
+	}
+
+	Value.erase(Value.cend());
+
+	return result;
+}
+
+FJceDataStructEnd::FJceDataStructEnd(int32 InTag)
+		: FJceDataBase(InTag)
+{
+}
+
+boost::container::vector<uint8> FJceDataStructEnd::getRawData()
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+
+	return result;
 }
