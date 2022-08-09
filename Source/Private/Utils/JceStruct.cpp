@@ -11,7 +11,7 @@ void FJceDataBase::writeHead(boost::container::vector<uint8>& Out) const
 		// +-------------------+
 		// | 1 1 1 1 | 1 1 1 1 |
 		// +---------+---------+
-		// |   type  |   tag   |
+		// |   tag   |  type   |
 		// +---------+---------+
 
 		uint8 headByte = (Tag << 4) | static_cast<uint8>(getType());
@@ -288,7 +288,12 @@ boost::container::vector<uint8> FJceDataStruct::getRawData()
 	boost::container::vector<uint8> result;
 	writeHead(result);
 
-	Value.push_back(boost::make_shared<FJceDataStructEnd>(0));
+	bool bNeedAdditionalEnd = Value.back()->getType() != EJceDataType::StructEnd;
+
+	if (bNeedAdditionalEnd)
+	{
+		Value.push_back(boost::make_shared<FJceDataStructEnd>(0));
+	}
 
 	for (const boost::shared_ptr<FJceDataBase>& Item : Value)
 	{
@@ -296,7 +301,10 @@ boost::container::vector<uint8> FJceDataStruct::getRawData()
 		result.insert(result.cend(), itemData.cbegin(), itemData.cend());
 	}
 
-	Value.erase(Value.cend());
+	if (bNeedAdditionalEnd)
+	{
+		Value.erase(Value.cend());
+	}
 
 	return result;
 }
