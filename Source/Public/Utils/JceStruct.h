@@ -45,6 +45,22 @@ public:
 	virtual EJceDataType getType() const = 0;
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) = 0;
 
+	virtual bool TryGetBool(bool& OutValue) { return false; }
+	virtual bool TryGetByte(int8& OutValue) { return false; }
+	virtual bool TryGetByte(uint8& OutValue) { return false; }
+	virtual bool TryGetShort(int16& OutValue) { return false; }
+	virtual bool TryGetShort(uint16& OutValue) { return false; }
+	virtual bool TryGetInt(int32& OutValue) { return false; }
+	virtual bool TryGetInt(uint32& OutValue) { return false; }
+	virtual bool TryGetLong(int64& OutValue) { return false; }
+	virtual bool TryGetLong(uint64& OutValue) { return false; }
+	virtual bool TryGetFloat(float& OutValue) { return false; }
+	virtual bool TryGetDouble(double& OutValue) { return false; }
+	virtual bool TryGetString(boost::container::string& OutValue) { return false; }
+	virtual bool TryGetBytes(boost::container::vector<uint8>& OutValue) { return false; }
+	virtual bool TryGetValueList(boost::container::vector<boost::shared_ptr<FJceDataBase>>& OutValue) { return false; }
+	virtual bool TryGetMap(boost::container::map<boost::shared_ptr<FJceDataBase>, boost::shared_ptr<FJceDataBase>>& OutValue) { return false; }
+
 protected:
 	virtual void writeHead(FMemoryWriter& Writer) const;
 
@@ -62,6 +78,10 @@ public:
 	virtual EJceDataType getType() const override { return EJceDataType::Byte; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
+	virtual bool TryGetBool(bool& OutValue) override;
+	virtual bool TryGetByte(int8& OutValue) override;
+	virtual bool TryGetByte(uint8& OutValue) override;
+
 protected:
 	int8 Value;
 };
@@ -74,6 +94,9 @@ public:
 
 	virtual EJceDataType getType() const override { return EJceDataType::Short; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
+
+	virtual bool TryGetShort(int16& OutValue) override;
+	virtual bool TryGetShort(uint16& OutValue) override;
 
 protected:
 	int16 Value;
@@ -88,6 +111,9 @@ public:
 	virtual EJceDataType getType() const override { return EJceDataType::Int; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
+	virtual bool TryGetInt(int32& OutValue) override;
+	virtual bool TryGetInt(uint32& OutValue) override;
+
 protected:
 	int32 Value;
 };
@@ -100,6 +126,9 @@ public:
 
 	virtual EJceDataType getType() const override { return EJceDataType::Long; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
+
+	virtual bool TryGetLong(int64& OutValue) override;
+	virtual bool TryGetLong(uint64& OutValue) override;
 
 protected:
 	int64 Value;
@@ -114,6 +143,8 @@ public:
 	virtual EJceDataType getType() const override { return EJceDataType::Float; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
+	virtual bool TryGetFloat(float& OutValue) override;
+
 protected:
 	float Value;
 };
@@ -127,6 +158,8 @@ public:
 	virtual EJceDataType getType() const override { return EJceDataType::Double; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
+	virtual bool TryGetDouble(double& OutValue) override;
+
 protected:
 	double Value;
 };
@@ -139,6 +172,8 @@ public:
 
 	virtual EJceDataType getType() const override { return Value.size() <= 256 ? EJceDataType::ShortString : EJceDataType::LongString; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
+
+	virtual bool TryGetString(boost::container::string& OutValue) override;
 
 protected:
 	boost::container::string Value;
@@ -155,6 +190,8 @@ public:
 	virtual EJceDataType getType() const override { return EJceDataType::Map; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
+	virtual bool TryGetMap(boost::container::map<boost::shared_ptr<FJceDataBase>, boost::shared_ptr<FJceDataBase>>& OutValue) override;
+
 protected:
 	boost::container::map<boost::shared_ptr<FJceDataBase>, boost::shared_ptr<FJceDataBase>> Value;
 };
@@ -169,6 +206,8 @@ public:
 
 	virtual EJceDataType getType() const override { return EJceDataType::List; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
+
+	virtual bool TryGetValueList(boost::container::vector<boost::shared_ptr<FJceDataBase>>& OutValue) override;
 
 protected:
 	boost::container::list<boost::shared_ptr<FJceDataBase>> Value;
@@ -185,6 +224,8 @@ public:
 	virtual EJceDataType getType() const override { return EJceDataType::TYPE_SIMPLE_LIST; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
+	virtual bool TryGetBytes(boost::container::vector<uint8>& OutValue) override;
+
 protected:
 	int32 LenTag;
 	boost::container::vector<uint8> Value;
@@ -200,6 +241,8 @@ public:
 
 	virtual EJceDataType getType() const override { return EJceDataType::StructBegin; }
 	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
+
+	virtual bool TryGetValueList(boost::container::vector<boost::shared_ptr<FJceDataBase>>& OutValue) override;
 
 protected:
 	boost::container::list<boost::shared_ptr<FJceDataBase>> Value;

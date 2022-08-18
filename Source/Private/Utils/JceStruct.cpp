@@ -54,6 +54,24 @@ boost::container::vector<uint8> FJceDataByte::getRawData(bool bNeedSwapBytes /*=
 	return result;
 }
 
+bool FJceDataByte::TryGetBool(bool& OutValue)
+{
+	OutValue = Value == 0 ? false : true;
+	return true;
+}
+
+bool FJceDataByte::TryGetByte(int8& OutValue)
+{
+	OutValue = Value;
+	return true;
+}
+
+bool FJceDataByte::TryGetByte(uint8& OutValue)
+{
+	OutValue = static_cast<uint8>(Value);
+	return true;
+}
+
 FJceDataShort::FJceDataShort(int16 InValue, int32 InTag)
 	: FJceDataBase(InTag)
 	, Value(InValue)
@@ -72,6 +90,18 @@ boost::container::vector<uint8> FJceDataShort::getRawData(bool bNeedSwapBytes /*
 	writer << Value;
 
 	return result;
+}
+
+bool FJceDataShort::TryGetShort(int16& OutValue)
+{
+	OutValue = Value;
+	return true;
+}
+
+bool FJceDataShort::TryGetShort(uint16& OutValue)
+{
+	OutValue = static_cast<uint16>(OutValue);
+	return true;
 }
 
 FJceDataInt::FJceDataInt(int32 InValue, int32 InTag)
@@ -93,6 +123,18 @@ boost::container::vector<uint8> FJceDataInt::getRawData(bool bNeedSwapBytes /*= 
 	return result;
 }
 
+bool FJceDataInt::TryGetInt(int32& OutValue)
+{
+	OutValue = Value;
+	return true;
+}
+
+bool FJceDataInt::TryGetInt(uint32& OutValue)
+{
+	OutValue = static_cast<uint32>(OutValue);
+	return true;
+}
+
 FJceDataLong::FJceDataLong(int64 InValue, int32 InTag)
 	: FJceDataBase(InTag)
 	, Value(InValue)
@@ -110,6 +152,18 @@ boost::container::vector<uint8> FJceDataLong::getRawData(bool bNeedSwapBytes /*=
 	writer << Value;
 
 	return result;
+}
+
+bool FJceDataLong::TryGetLong(int64& OutValue)
+{
+	OutValue = Value;
+	return true;
+}
+
+bool FJceDataLong::TryGetLong(uint64& OutValue)
+{
+	OutValue = static_cast<uint64>(Value);
+	return true;
 }
 
 FJceDataFloat::FJceDataFloat(float InValue, int32 InTag)
@@ -131,6 +185,12 @@ boost::container::vector<uint8> FJceDataFloat::getRawData(bool bNeedSwapBytes /*
 	return result;
 }
 
+bool FJceDataFloat::TryGetFloat(float& OutValue)
+{
+	OutValue = Value;
+	return true;
+}
+
 FJceDataDouble::FJceDataDouble(double InValue, int32 InTag)
 	: FJceDataBase(InTag)
 	, Value(InValue)
@@ -148,6 +208,12 @@ boost::container::vector<uint8> FJceDataDouble::getRawData(bool bNeedSwapBytes /
 	writer << Value;
 
 	return result;
+}
+
+bool FJceDataDouble::TryGetDouble(double& OutValue)
+{
+	Value = OutValue;
+	return true;
 }
 
 FJceDataString::FJceDataString(const boost::container::string& InValue, int32 InTag)
@@ -179,6 +245,12 @@ boost::container::vector<uint8> FJceDataString::getRawData(bool bNeedSwapBytes /
 	result.insert(result.cend(), Value.cbegin(), Value.cend());
 
 	return result;
+}
+
+bool FJceDataString::TryGetString(boost::container::string& OutValue)
+{
+	OutValue = Value;
+	return true;
 }
 
 FJceDataMap::FJceDataMap(const boost::container::map<boost::shared_ptr<FJceDataBase>, boost::shared_ptr<FJceDataBase>>& InValue, int32 InTag)
@@ -220,6 +292,12 @@ boost::container::vector<uint8> FJceDataMap::getRawData(bool bNeedSwapBytes /*= 
 	return result;
 }
 
+bool FJceDataMap::TryGetMap(boost::container::map<boost::shared_ptr<FJceDataBase>, boost::shared_ptr<FJceDataBase>>& OutValue)
+{
+	OutValue = Value;
+	return true;
+}
+
 FJceDataList::FJceDataList(const boost::container::list<boost::shared_ptr<FJceDataBase>>& InValue, int32 InTag)
 	: FJceDataBase(InTag)
 	, Value(InValue)
@@ -254,6 +332,14 @@ boost::container::vector<uint8> FJceDataList::getRawData(bool bNeedSwapBytes /*=
 	}
 
 	return result;
+}
+
+bool FJceDataList::TryGetValueList(boost::container::vector<boost::shared_ptr<FJceDataBase>>& OutValue)
+{
+	OutValue.clear();
+	OutValue.insert(OutValue.cend(), Value.cbegin(), Value.cend());
+	
+	return true;
 }
 
 FJceDataSimpleList::FJceDataSimpleList(const boost::container::vector<uint8>& InValue, int32 InTag, int32 InLenTag)
@@ -300,6 +386,12 @@ boost::container::vector<uint8> FJceDataSimpleList::getRawData(bool bNeedSwapByt
 	return result;
 }
 
+bool FJceDataSimpleList::TryGetBytes(boost::container::vector<uint8>& OutValue)
+{
+	OutValue = Value;
+	return true;
+}
+
 FJceDataStruct::FJceDataStruct(const boost::container::list<boost::shared_ptr<FJceDataBase>>& InValue, int32 InTag)
 	: FJceDataBase(InTag)
 	, Value(InValue)
@@ -343,6 +435,14 @@ boost::container::vector<uint8> FJceDataStruct::getRawData(bool bNeedSwapBytes /
 	}
 
 	return result;
+}
+
+bool FJceDataStruct::TryGetValueList(boost::container::vector<boost::shared_ptr<FJceDataBase>>& OutValue)
+{
+	OutValue.clear();
+	OutValue.insert(OutValue.cend(), Value.cbegin(), Value.cend());
+
+	return true;
 }
 
 FJceDataStructEnd::FJceDataStructEnd(int32 InTag)
