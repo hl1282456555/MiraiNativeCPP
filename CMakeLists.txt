@@ -26,6 +26,12 @@ add_library(${PROJECT_NAME} SHARED
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCE_FILES})
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${THIRDPARTY_FILES})
 
+# Add openssl support
+if (OPENSSL_FOUND)
+	include_directories(${OPENSSL_INCLUDE_DIR})
+	target_link_libraries(${PROJECT_NAME} PUBLIC OpenSSL::SSL)
+endif()
+
 # Add boost support
 if (Boost_FOUND)
 	message("Boost VERSION: ${Boost_VERSION}")
@@ -46,12 +52,6 @@ if (Boost_FOUND)
 		Boost::date_time
 		Boost::locale
 		)
-endif()
-
-# Add openssl support
-if (OPENSSL_FOUND)
-	include_directories(${OPENSSL_INCLUDE_DIR})
-	target_link_libraries(${PROJECT_NAME} PUBLIC OpenSSL::SSL)
 endif()
 
 # Add http request ability support
