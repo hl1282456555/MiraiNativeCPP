@@ -169,7 +169,7 @@ boost::container::vector<uint8> FJceDataString::getRawData()
 	return result;
 }
 
-FJceDataMap::FJceDataMap(const boost::container::map<boost::shared_ptr<FJceDataBase>, const boost::shared_ptr<FJceDataBase>>& InValue, int32 InTag)
+FJceDataMap::FJceDataMap(const boost::container::map<boost::shared_ptr<FJceDataBase>, boost::shared_ptr<FJceDataBase>>& InValue, int32 InTag)
 	: FJceDataBase(InTag)
 	, Value(InValue)
 {
@@ -240,8 +240,7 @@ boost::container::vector<uint8> FJceDataList::getRawData()
 	return result;
 }
 
-FJceDataSimpleList::FJceDataSimpleList(const boost::container::vector<uint8>& InValue, int32 InTag,
-	int32 InListTag)
+FJceDataSimpleList::FJceDataSimpleList(const boost::container::vector<uint8>& InValue, int32 InTag)
 		: FJceDataBase(InTag)
 		, Value(InValue)
 {
@@ -259,8 +258,22 @@ boost::container::vector<uint8> FJceDataSimpleList::getRawData()
 
 	int32 dataLen = static_cast<int32>(Value.size());
 
-	FMemoryWriter writer(result, true);
-	writer << dataLen;
+	boost::container::vector<uint8> rawDataLen;
+
+	if (dataLen <= 256)
+	{
+		int8 byteLen = static_cast<int8>(dataLen);
+		FJceDataByte lenData(byteLen, 0);
+		rawDataLen = lenData.getRawData();
+	}
+	else
+	{
+		int16 shortLen = static_cast<int16>(dataLen);
+		FJceDataShort lenData(shortLen, 0);
+		rawDataLen = lenData.getRawData();
+	}
+
+	result.insert(result.cend(), rawDataLen.cbegin(), rawDataLen.cend());
 
 	result.insert(result.cend(), Value.cbegin(), Value.cend());
 
@@ -315,6 +328,20 @@ FJceDataStructEnd::FJceDataStructEnd(int32 InTag)
 }
 
 boost::container::vector<uint8> FJceDataStructEnd::getRawData()
+{
+	boost::container::vector<uint8> result;
+	writeHead(result);
+
+	return result;
+}
+
+FJceDataZeroTag::FJceDataZeroTag(int32 InTag)
+	: FJceDataBase(InTag)
+{
+
+}
+
+boost::container::vector<uint8> FJceDataZeroTag::getRawData()
 {
 	boost::container::vector<uint8> result;
 	writeHead(result);
