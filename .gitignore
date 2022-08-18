@@ -1,2 +1,4 @@
 # cmake files
 cmake_build/
+out/
+.vs/
