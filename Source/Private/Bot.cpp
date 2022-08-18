@@ -4,11 +4,10 @@
 
 #include "Utils/MD5.h"
 #include "Utils/RandomUtils.h"
+#include "Utils/JceStructEncoder.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
-
-#include <boost/container/string.hpp>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
@@ -20,6 +19,9 @@
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
+
+#include <boost/algorithm/algorithm.hpp>
+#include <boost/algorithm/hex.hpp>
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(attr_botaccount, "BotAccount", unsigned long long)
 
@@ -98,4 +100,17 @@ void ABot::UseDevice(const FDeviceInfo& InDeviceInfo)
 	DeviceInfo = InDeviceInfo;
 	HighwaySession.AppID = AppVersion.AppId;
 	Signature.Ksid = "|" + InDeviceInfo.IMEI + "|A8.2.7.27f6ea96";
+}
+
+boost::container::vector<boost::asio::ip::tcp::endpoint> ABot::getSSOAddress()
+{
+	FAppVersion protocolVersion = AppVersionMap[SystemDeviceInfo.Protocol];
+
+	boost::container::vector<uint8> key;
+	boost::algorithm::unhex("F0441F5FF42DA58FDCF7949ABA62D411", std::back_inserter(key));
+
+	FJceStructEncoder jceEncoder;
+	jceEncoder.writeLong(0, 1).writeLong(0, 2).writeByte(1, 3).writeString("00000", 4)
+		.writeInt(static_cast<int32>(protocolVersion.AppId), 6).writeString(SystemDeviceInfo.IMEI, 7)
+		.writeLong(0, 8).writeLong(0, 9).writeLong(0, 10).writeLong(0, 11).writeByte(0, 12).writeLong(0, 13);
 }

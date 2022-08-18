@@ -9,6 +9,7 @@
 #include "Structures/Guild.h"
 
 #include <boost/container/string.hpp>
+#include <boost/container/vector.hpp>
 
 #include <boost/asio.hpp>
 
@@ -32,6 +33,8 @@ protected:
 	void InitLogger();
 
 	void UseDevice(const FDeviceInfo& InDeviceInfo);
+
+	boost::container::vector<boost::asio::ip::tcp::endpoint> getSSOAddress();
 
 protected:
 	// Bot logger
