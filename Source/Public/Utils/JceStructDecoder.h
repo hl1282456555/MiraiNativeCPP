@@ -15,7 +15,7 @@ public:
 class MIRAI_NATIVE_CPP_API FJceStructDecoder
 {
 public:
-	explicit FJceStructDecoder(const boost::container::vector<uint8>& InBytes);
+	explicit FJceStructDecoder(const boost::container::vector<uint8>& InBytes, bool bNeedSwapBytes = false);
 
 	boost::shared_ptr<FJceDataBase> read();
 

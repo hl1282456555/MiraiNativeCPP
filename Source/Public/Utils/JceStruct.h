@@ -2,6 +2,7 @@
 #define UTILS_JCE_STRUCT_H
 
 #include "Definitions.h"
+#include "Archive/MemoryWriter.h"
 
 #include <boost/container/vector.hpp>
 #include <boost/container/map.hpp>
@@ -42,10 +43,10 @@ public:
 	int32 getTag() const { return Tag; }
 
 	virtual EJceDataType getType() const = 0;
-	virtual boost::container::vector<uint8> getRawData() = 0;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) = 0;
 
 protected:
-	virtual void writeHead(boost::container::vector<uint8>& Out) const;
+	virtual void writeHead(FMemoryWriter& Writer) const;
 
 protected:
 	int32 Tag;
@@ -59,7 +60,7 @@ public:
 	virtual ~FJceDataByte() {}
 
 	virtual EJceDataType getType() const override { return EJceDataType::Byte; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
 	int8 Value;
@@ -72,7 +73,7 @@ public:
 	virtual ~FJceDataShort() {}
 
 	virtual EJceDataType getType() const override { return EJceDataType::Short; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
 	int16 Value;
@@ -85,7 +86,7 @@ public:
 	virtual ~FJceDataInt() {}
 
 	virtual EJceDataType getType() const override { return EJceDataType::Int; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
 	int32 Value;
@@ -98,7 +99,7 @@ public:
 	virtual ~FJceDataLong() {}
 
 	virtual EJceDataType getType() const override { return EJceDataType::Long; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
 	int64 Value;
@@ -111,7 +112,7 @@ public:
 	virtual ~FJceDataFloat() {}
 
 	virtual EJceDataType getType() const override { return EJceDataType::Float; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
 	float Value;
@@ -124,7 +125,7 @@ public:
 	virtual ~FJceDataDouble() {}
 
 	virtual EJceDataType getType() const override { return EJceDataType::Double; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
 	double Value;
@@ -137,7 +138,7 @@ public:
 	virtual ~FJceDataString() {}
 
 	virtual EJceDataType getType() const override { return Value.size() <= 256 ? EJceDataType::ShortString : EJceDataType::LongString; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
 	boost::container::string Value;
@@ -152,7 +153,7 @@ public:
 	void add(const boost::shared_ptr<FJceDataBase>& InKey, const boost::shared_ptr<FJceDataBase>& InValue);
 
 	virtual EJceDataType getType() const override { return EJceDataType::Map; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
 	boost::container::map<boost::shared_ptr<FJceDataBase>, boost::shared_ptr<FJceDataBase>> Value;
@@ -167,7 +168,7 @@ public:
 	void add(const boost::shared_ptr<FJceDataBase>& NewItem);
 
 	virtual EJceDataType getType() const override { return EJceDataType::List; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
 	boost::container::list<boost::shared_ptr<FJceDataBase>> Value;
@@ -176,15 +177,16 @@ protected:
 class MIRAI_NATIVE_CPP_API FJceDataSimpleList : public FJceDataBase
 {
 public:
-	FJceDataSimpleList(const boost::container::vector<uint8>& InValue, int32 InTag = 0);
+	FJceDataSimpleList(const boost::container::vector<uint8>& InValue, int32 InTag = 0, int32 InLenTag = 0);
 	virtual ~FJceDataSimpleList() {}
 
 	void append(const boost::container::vector<uint8>& NewData);
 
 	virtual EJceDataType getType() const override { return EJceDataType::TYPE_SIMPLE_LIST; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
+	int32 LenTag;
 	boost::container::vector<uint8> Value;
 };
 
@@ -197,7 +199,7 @@ public:
 	void add(const boost::shared_ptr<FJceDataBase>& NewItem);
 
 	virtual EJceDataType getType() const override { return EJceDataType::StructBegin; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 
 protected:
 	boost::container::list<boost::shared_ptr<FJceDataBase>> Value;
@@ -210,7 +212,7 @@ public:
 	virtual ~FJceDataStructEnd() {}
 
 	virtual EJceDataType getType() const override { return EJceDataType::StructEnd; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 };
 
 class MIRAI_NATIVE_CPP_API FJceDataZeroTag : public FJceDataBase
@@ -220,7 +222,7 @@ public:
 	virtual ~FJceDataZeroTag() {}
 
 	virtual EJceDataType getType() const override { return EJceDataType::ZeroTag; }
-	virtual boost::container::vector<uint8> getRawData() override;
+	virtual boost::container::vector<uint8> getRawData(bool bNeedSwapBytes = false) override;
 };
 
 #endif

@@ -2,10 +2,10 @@
 
 #include <boost/make_shared.hpp>
 
-FJceStructDecoder::FJceStructDecoder(const boost::container::vector<uint8>& InBytes)
+FJceStructDecoder::FJceStructDecoder(const boost::container::vector<uint8>& InBytes, bool bNeedSwapBytes)
 	: BytesReader(InBytes)
 {
-
+	BytesReader.setSwapBytes(bNeedSwapBytes);
 }
 
 boost::shared_ptr<FJceDataBase> FJceStructDecoder::read()
@@ -24,42 +24,42 @@ boost::shared_ptr<FJceDataBase> FJceStructDecoder::read()
 	{
 		uint8 data = 0;
 		BytesReader << data;
-		result = boost::make_shared<FJceDataByte>(data);
+		result = boost::make_shared<FJceDataByte>(data, headData.Tag);
 		break;
 	}
 	case EJceDataType::Short:
 	{
 		int16 data = 0;
 		BytesReader << data;
-		result = boost::make_shared<FJceDataShort>(data);
+		result = boost::make_shared<FJceDataShort>(data, headData.Tag);
 		break;
 	}
 	case EJceDataType::Int:
 	{
 		int32 data = 0;
 		BytesReader << data;
-		result = boost::make_shared<FJceDataInt>(data);
+		result = boost::make_shared<FJceDataInt>(data, headData.Tag);
 		break;
 	}
 	case EJceDataType::Long:
 	{
 		int64 data = 0;
 		BytesReader << data;
-		result = boost::make_shared<FJceDataLong>(data);
+		result = boost::make_shared<FJceDataLong>(data, headData.Tag);
 		break;
 	}
 	case EJceDataType::Float:
 	{
 		float data = 0;
 		BytesReader << data;
-		result = boost::make_shared<FJceDataFloat>(data);
+		result = boost::make_shared<FJceDataFloat>(data, headData.Tag);
 		break;
 	}
 	case EJceDataType::Double:
 	{
 		double data = 0;
 		BytesReader << data;
-		result = boost::make_shared<FJceDataDouble>(data);
+		result = boost::make_shared<FJceDataDouble>(data, headData.Tag);
 		break;
 	}
 	case EJceDataType::ShortString:
@@ -71,7 +71,7 @@ boost::shared_ptr<FJceDataBase> FJceStructDecoder::read()
 		BytesReader.serialize(dataContent, contentLen);
 
 		boost::container::string data(dataContent, contentLen);
-		result = boost::make_shared<FJceDataString>(data);
+		result = boost::make_shared<FJceDataString>(data, headData.Tag);
 		break;
 	}
 	case EJceDataType::LongString:
@@ -83,7 +83,7 @@ boost::shared_ptr<FJceDataBase> FJceStructDecoder::read()
 		data.resize(contentLen);
 		BytesReader.serialize(data.data(), contentLen);
 
-		result = boost::make_shared<FJceDataString>(data);
+		result = boost::make_shared<FJceDataString>(data, headData.Tag);
 		break;
 	}
 	case EJceDataType::Map:
@@ -101,7 +101,7 @@ boost::shared_ptr<FJceDataBase> FJceStructDecoder::read()
 			cachedMap[key] = value;
 		}
 
-		result = boost::make_shared<FJceDataMap>(cachedMap);
+		result = boost::make_shared<FJceDataMap>(cachedMap, headData.Tag);
 		break;
 	}
 	case EJceDataType::List:
@@ -117,7 +117,7 @@ boost::shared_ptr<FJceDataBase> FJceStructDecoder::read()
 			cachedList.push_back(item);
 		}
 
-		result = boost::make_shared<FJceDataList>(cachedList);
+		result = boost::make_shared<FJceDataList>(cachedList, headData.Tag);
 		break;
 	}
 	case EJceDataType::StructBegin:
@@ -135,17 +135,17 @@ boost::shared_ptr<FJceDataBase> FJceStructDecoder::read()
 			cachedStruct.push_back(item);
 		}
 
-		result = boost::make_shared<FJceDataStruct>(cachedStruct);
+		result = boost::make_shared<FJceDataStruct>(cachedStruct, headData.Tag);
 		break;
 	}
 	case EJceDataType::StructEnd:
 	{
-		result = boost::make_shared<FJceDataStructEnd>();
+		result = boost::make_shared<FJceDataStructEnd>(headData.Tag);
 		break;
 	}
 	case EJceDataType::ZeroTag:
 	{
-		result = boost::make_shared<FJceDataZeroTag>();
+		result = boost::make_shared<FJceDataZeroTag>(headData.Tag);
 		break;
 	}
 	case EJceDataType::TYPE_SIMPLE_LIST:
@@ -173,7 +173,7 @@ boost::shared_ptr<FJceDataBase> FJceStructDecoder::read()
 		simpleListData.resize(dataLen);
 		BytesReader.serialize(simpleListData.data(), dataLen);
 
-		result = boost::make_shared<FJceDataSimpleList>(simpleListData);
+		result = boost::make_shared<FJceDataSimpleList>(simpleListData, headData.Tag, lenHead.Tag);
 
 		break;
 	}
