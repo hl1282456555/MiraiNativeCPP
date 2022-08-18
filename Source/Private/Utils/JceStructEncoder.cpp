@@ -126,3 +126,13 @@ boost::container::vector<uint8>& FJceStructEncoder::getBytes()
 {
 	return Bytes;
 }
+
+boost::container::vector<uint8> FJceStructEncoder::packUniRequestData()
+{
+	boost::container::vector<uint8> result;
+	result.push_back(0x0a);
+	result.insert(result.cend(), Bytes.cbegin(), Bytes.cend());
+	result.push_back(0x0B);
+
+	return result;
+}

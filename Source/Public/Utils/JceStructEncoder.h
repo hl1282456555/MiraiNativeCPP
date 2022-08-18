@@ -29,6 +29,8 @@ public:
 
 	boost::container::vector<uint8>& getBytes();
 
+	boost::container::vector<uint8> packUniRequestData();
+
 private:
 	boost::container::vector<uint8> Bytes;
 	bool bNeedSwapBytes;
