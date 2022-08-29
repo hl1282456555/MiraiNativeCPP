@@ -13,6 +13,8 @@ public:
 	FJceStructEncoder(bool bSwapBytesOrder = false);
 	virtual ~FJceStructEncoder() {}
 
+	void clear();
+
 	FJceStructEncoder& writeByte(int8 Val, int32 Tag);
 	FJceStructEncoder& writeBool(bool Val, int32 Tag);
 	FJceStructEncoder& writeShort(int16 Val, int32 Tag);

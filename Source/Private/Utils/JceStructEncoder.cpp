@@ -6,6 +6,11 @@ FJceStructEncoder::FJceStructEncoder(bool bSwapBytesOrder)
 	
 }
 
+void FJceStructEncoder::clear()
+{
+	Bytes.clear();
+}
+
 FJceStructEncoder& FJceStructEncoder::writeByte(int8 Val, int32 Tag)
 {
 	FJceDataByte data(Val, Tag);

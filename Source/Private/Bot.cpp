@@ -5,6 +5,7 @@
 #include "Utils/MD5.h"
 #include "Utils/RandomUtils.h"
 #include "Utils/JceStructEncoder.h"
+#include "Utils/JceStruct.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
@@ -113,4 +114,6 @@ boost::container::vector<boost::asio::ip::tcp::endpoint> ABot::getSSOAddress()
 	jceEncoder.writeLong(0, 1).writeLong(0, 2).writeByte(1, 3).writeString("00000", 4)
 		.writeInt(static_cast<int32>(protocolVersion.AppId), 6).writeString(SystemDeviceInfo.IMEI, 7)
 		.writeLong(0, 8).writeLong(0, 9).writeLong(0, 10).writeLong(0, 11).writeByte(0, 12).writeLong(0, 13);
+
+	FRequestDataVersion3 buffer = {{"HttpServerListReq", jceEncoder.packUniRequestData()}};
 }
